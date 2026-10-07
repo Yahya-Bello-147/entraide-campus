@@ -14,6 +14,7 @@
 - Pas de paiement, pas d'appli mobile native (site web seulement).
 - Pas de messagerie, ni de suggestions, ni de partage automatique des coordonnées avant que le palier 1 marche en ligne.
 - Rien qui ne soit pas dans le brief du cours.
+- Exception choisie : on accepte aussi la vente d'objets (catégorie « Objets / vente », prix facultatif). Le paiement se fait en dehors de l'appli.
 
 ## Outils
 Next.js (TypeScript, Tailwind) · GitHub · Vercel · Supabase. Rien d'autre sans me demander.
