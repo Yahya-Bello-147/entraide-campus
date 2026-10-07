@@ -19,7 +19,10 @@ export async function EnTete() {
       </Link>
       {user ? (
         <div className="flex min-w-0 items-center gap-3">
-          <span className="truncate opacity-90">Connecté : {user.email}</span>
+          <Link href="/annonces" className="font-semibold underline">
+            Annonces
+          </Link>
+          <span className="hidden truncate opacity-90 sm:inline">Connecté : {user.email}</span>
           <form action={deconnexion}>
             <button type="submit" className="whitespace-nowrap font-semibold underline">
               Se déconnecter

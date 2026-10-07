@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Carte } from "./carte";
 
 const etapes = [
@@ -38,6 +39,12 @@ export default function Home() {
           tu as besoin
         </p>
       </section>
+
+      <div className="mt-10 flex justify-center">
+        <Link href="/annonces" className="titre rounded-full bg-creme px-6 py-3 text-xl text-encre">
+          Voir les annonces
+        </Link>
+      </div>
 
       <section className="mt-12 grid gap-6 sm:grid-cols-3">
         {etapes.map((etape) => (
