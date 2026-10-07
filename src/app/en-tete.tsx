@@ -10,23 +10,24 @@ export async function EnTete() {
   } = await supabase.auth.getUser();
 
   return (
-    <header className="flex items-center justify-between gap-3 border-b border-zinc-200 px-4 py-3 text-sm dark:border-zinc-800">
-      <Link href="/" className="font-semibold">
-        L&apos;Entraide du Campus
+    <header className="flex items-center justify-between gap-3 px-4 py-4 text-sm">
+      <Link
+        href="/"
+        className="titre rounded-full border-2 border-white px-4 py-1 text-lg text-white"
+      >
+        entraide
       </Link>
       {user ? (
         <div className="flex min-w-0 items-center gap-3">
-          <span className="truncate text-zinc-600 dark:text-zinc-400">
-            Connecté : {user.email}
-          </span>
+          <span className="truncate opacity-90">Connecté : {user.email}</span>
           <form action={deconnexion}>
-            <button type="submit" className="whitespace-nowrap underline">
+            <button type="submit" className="whitespace-nowrap font-semibold underline">
               Se déconnecter
             </button>
           </form>
         </div>
       ) : (
-        <nav className="flex gap-3">
+        <nav className="flex gap-4 font-semibold">
           <Link href="/connexion" className="underline">
             Connexion
           </Link>

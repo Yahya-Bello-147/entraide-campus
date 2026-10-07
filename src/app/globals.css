@@ -1,26 +1,36 @@
 @import "tailwindcss";
 
+/* Palette inspirée de l'affiche de référence : fond bleu vif, titres crème, cartes bleu clair. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bleu: #0b7fd6;
+  --creme: #fff3c4;
+  --cyan: #a7ecf4;
+  --encre: #0d1b2a;
+  --erreur: #b42318;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bleu: var(--bleu);
+  --color-creme: var(--creme);
+  --color-cyan: var(--cyan);
+  --color-encre: var(--encre);
+  --color-erreur: var(--erreur);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-titre: var(--font-fraunces);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bleu);
+  color: #ffffff;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Titres façon « portfolio étudiant » : serif très gras, aux formes arrondies. */
+.titre {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-weight: 800;
+  font-variation-settings: "SOFT" 100, "opsz" 144;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
 }

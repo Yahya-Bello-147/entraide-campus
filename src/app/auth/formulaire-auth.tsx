@@ -9,22 +9,19 @@ type Props = {
   autocompleteMotDePasse: "new-password" | "current-password";
 };
 
+const styleChamp =
+  "rounded-lg border-2 border-encre/20 bg-white px-3 py-2 text-base text-encre focus:border-bleu focus:outline-none";
+
 export function FormulaireAuth({ action, libelleBouton, autocompleteMotDePasse }: Props) {
   const [etat, formAction, enCours] = useActionState(action, {});
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
-      <label className="flex flex-col gap-1 text-sm">
+      <label className="flex flex-col gap-1 text-sm font-semibold">
         E-mail
-        <input
-          type="email"
-          name="email"
-          required
-          autoComplete="email"
-          className="rounded-md border border-zinc-300 px-3 py-2 text-base dark:border-zinc-700 dark:bg-zinc-900"
-        />
+        <input type="email" name="email" required autoComplete="email" className={styleChamp} />
       </label>
-      <label className="flex flex-col gap-1 text-sm">
+      <label className="flex flex-col gap-1 text-sm font-semibold">
         Mot de passe
         <input
           type="password"
@@ -32,12 +29,12 @@ export function FormulaireAuth({ action, libelleBouton, autocompleteMotDePasse }
           required
           minLength={6}
           autoComplete={autocompleteMotDePasse}
-          className="rounded-md border border-zinc-300 px-3 py-2 text-base dark:border-zinc-700 dark:bg-zinc-900"
+          className={styleChamp}
         />
       </label>
 
       {etat.erreur && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="text-sm font-semibold text-erreur">
           {etat.erreur}
         </p>
       )}
@@ -45,7 +42,7 @@ export function FormulaireAuth({ action, libelleBouton, autocompleteMotDePasse }
       <button
         type="submit"
         disabled={enCours}
-        className="rounded-md bg-foreground px-4 py-2 font-medium text-background disabled:opacity-50"
+        className="titre rounded-full bg-bleu px-4 py-3 text-lg text-creme disabled:opacity-50"
       >
         {enCours ? "Patiente…" : libelleBouton}
       </button>
