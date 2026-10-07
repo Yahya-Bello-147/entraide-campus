@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Carte } from "@/app/carte";
+import { demanderContact } from "@/app/demandes/actions";
 import { CATEGORIES, TYPES, type CategorieAnnonce, type TypeAnnonce } from "@/lib/annonces/valider";
 
 type Annonce = {
@@ -16,7 +17,13 @@ type Annonce = {
   created_at: string;
 };
 
-const formatPrix = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" });
+const STATUT_DEMANDE = {
+  en_attente: "Demande envoyée · en attente",
+  acceptee: "Demande acceptée · voir les coordonnées",
+  refusee: "Demande refusée",
+} as const;
+
+const formatPrix =new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" });
 const formatDate = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long" });
 
 const styleFiltre =
@@ -49,6 +56,17 @@ export default async function PageAnnonces({
 
   const { data, error } = await requete;
   const annonces = (data ?? []) as Annonce[];
+
+  // Prénom des auteurs + mes demandes déjà envoyées (pour afficher leur statut sur la carte).
+  const auteurs = [...new Set(annonces.map((a) => a.auteur_id))];
+  const [{ data: profils }, { data: mesDemandes }] = await Promise.all([
+    supabase.from("profils").select("id, prenom").in("id", auteurs),
+    supabase.from("demandes_contact").select("annonce_id, statut").eq("demandeur_id", user.id),
+  ]);
+  const prenom = new Map((profils ?? []).map((p) => [p.id as string, p.prenom as string]));
+  const statutDemande = new Map(
+    (mesDemandes ?? []).map((d) => [d.annonce_id as string, d.statut as keyof typeof STATUT_DEMANDE]),
+  );
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-10">
@@ -115,6 +133,24 @@ export default async function PageAnnonces({
               {annonce.lieu && <span>{annonce.lieu} · </span>}
               <span className="font-normal">{formatDate.format(new Date(annonce.created_at))}</span>
             </p>
+            <p className="mt-1 text-sm">par {prenom.get(annonce.auteur_id) ?? "un étudiant"}</p>
+
+            {annonce.auteur_id !== user.id && (
+              <div className="mt-4">
+                {statutDemande.has(annonce.id) ? (
+                  <Link href="/demandes" className="block rounded-full bg-white px-4 py-2 text-center text-sm font-semibold">
+                    {STATUT_DEMANDE[statutDemande.get(annonce.id)!]}
+                  </Link>
+                ) : (
+                  <form action={demanderContact}>
+                    <input type="hidden" name="annonceId" value={annonce.id} />
+                    <button type="submit" className="w-full rounded-full bg-encre px-4 py-2 text-sm font-semibold text-white">
+                      Demander le contact
+                    </button>
+                  </form>
+                )}
+              </div>
+            )}
           </Carte>
         ))}
       </div>

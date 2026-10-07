@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { deconnexion } from "@/app/auth/actions";
 
-// Barre du haut : montre qui est connecté, ou les liens Connexion / Inscription.
+// Barre du haut : liens de navigation si connecté, sinon Connexion / Inscription.
 export async function EnTete() {
   const supabase = await createClient();
   const {
@@ -10,7 +10,7 @@ export async function EnTete() {
   } = await supabase.auth.getUser();
 
   return (
-    <header className="flex items-center justify-between gap-3 px-4 py-4 text-sm">
+    <header className="flex flex-wrap items-center justify-between gap-3 px-4 py-4 text-sm">
       <Link
         href="/"
         className="titre rounded-full border-2 border-white px-4 py-1 text-lg text-white"
@@ -18,17 +18,22 @@ export async function EnTete() {
         entraide
       </Link>
       {user ? (
-        <div className="flex min-w-0 items-center gap-3">
-          <Link href="/annonces" className="font-semibold underline">
+        <nav className="flex flex-wrap items-center gap-x-4 gap-y-1 font-semibold">
+          <Link href="/annonces" className="underline">
             Annonces
           </Link>
-          <span className="hidden truncate opacity-90 sm:inline">Connecté : {user.email}</span>
+          <Link href="/demandes" className="underline">
+            Mes demandes
+          </Link>
+          <Link href="/profil" className="underline">
+            Mon profil
+          </Link>
           <form action={deconnexion}>
-            <button type="submit" className="whitespace-nowrap font-semibold underline">
+            <button type="submit" className="whitespace-nowrap underline opacity-80">
               Se déconnecter
             </button>
           </form>
-        </div>
+        </nav>
       ) : (
         <nav className="flex gap-4 font-semibold">
           <Link href="/connexion" className="underline">
