@@ -21,6 +21,15 @@
 2. Inventée : « l'assistant d'annonce » — vérifier les coordonnées cachées (priorité), puis rédiger (bonus).
    Détails : `docs/ia-inventee.md`.
 
+## Objectif pour le 17 décembre
+- Palier visé : **2** (palier 1 obligatoire + messagerie). Palier 3 seulement si tout le reste tient en ligne.
+- Les 3 écrans de la démo (histoire de Sam et Léa) :
+  1. Le profil de Sam : CV → l'IA propose les compétences → Sam valide (IA imposée).
+     Puis Sam publie son annonce : l'assistant repère un numéro caché, Sam le retire (IA inventée).
+  2. L'annonce et la demande de contact : Léa demande, Sam accepte, les coordonnées apparaissent (palier 1).
+  3. La messagerie : Léa et Sam s'écrivent (palier 2, règle d'or n°3).
+- On ajoute à l'existant, on ne refait pas ce qui marche.
+
 ## Outils
 Next.js (TypeScript, Tailwind) · GitHub · Vercel · Supabase. Rien d'autre sans me demander.
 
