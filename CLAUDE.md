@@ -16,6 +16,11 @@
 - Rien qui ne soit pas dans le brief du cours.
 - Exception choisie : on accepte aussi la vente d'objets (catégorie « Objets / vente », prix facultatif). Le paiement se fait en dehors de l'appli.
 
+## Les 2 IA
+1. Imposée : le profil depuis le CV (l'IA propose les compétences, la personne valide).
+2. Inventée : « l'assistant d'annonce » — vérifier les coordonnées cachées (priorité), puis rédiger (bonus).
+   Détails : `docs/ia-inventee.md`.
+
 ## Outils
 Next.js (TypeScript, Tailwind) · GitHub · Vercel · Supabase. Rien d'autre sans me demander.
 
