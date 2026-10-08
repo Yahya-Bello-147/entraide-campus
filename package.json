@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file=.env.local --env-file=.env.test.local --test --test-concurrency=1 \"tests/**/*.test.mjs\"",
-    "test:ia": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file=.env.local scripts/tester-ia-cv.mjs && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file=.env.local scripts/tester-ia-annonce.mjs"
+    "test:ia": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file=.env.local scripts/tester-ia-cv.mjs && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file=.env.local scripts/tester-ia-annonce.mjs && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file=.env.local scripts/tester-ia-redaction.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

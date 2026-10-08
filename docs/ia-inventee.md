@@ -44,5 +44,15 @@ Deux niveaux, au clic sur « Publier l'annonce » :
 Résultats sur les cas de test (`npm run test:ia`) : 7/7 conformes (normal, numéro en lettres, Instagram,
 Leboncoin déguisé, e-mail déguisé, texte piégé, annonce du MacBook sans fausse alerte).
 
+## Rôle RÉDIGER (bonus, en ligne)
+En haut de « Publier une annonce » : « ✨ Décris ton annonce en quelques mots ». L'IA
+(`src/lib/ia/rediger-annonce.ts`) propose type, catégorie, titre, description, prix et lieu, qui
+**pré-remplissent le formulaire**. La personne relit et modifie, puis publie : le rôle VÉRIFIER passe derrière.
+Règles données à l'IA : ne rien inventer (ni « bon état », ni date…), jamais de coordonnées.
+IA en panne → message clair, formulaire à remplir à la main.
+Résultats (`npm run test:ia`) : 5/5 cas conformes (MacBook, studio, montage TikTok, covoiturage,
+photographe avec pseudo Insta → pseudo retiré). Défaut trouvé et corrigé : l'IA écrivait « en bon état »
+alors que personne ne l'avait dit → règle durcie.
+
 ## Calendrier
 Construite en séance 4 (19 nov), après le profil depuis le CV.

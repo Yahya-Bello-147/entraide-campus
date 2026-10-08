@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { validerAnnonce, type ChampsAnnonce } from "@/lib/annonces/valider";
 import { detecterCoordonneesEvidentes } from "@/lib/annonces/coordonnees-evidentes";
 import { verifierAnnonce } from "@/lib/ia/verifier-annonce";
+import { redigerAnnonce } from "@/lib/ia/rediger-annonce";
 import type { Raison } from "@/lib/ia/verification";
 
 // En cas d'erreur, on renvoie aussi ce qui a été tapé pour ne pas vider le formulaire.
@@ -72,4 +73,26 @@ export async function publierAnnonce(
 
   revalidatePath("/annonces");
   redirect("/annonces");
+}
+
+export type EtatRedaction = { erreur?: string; proposition?: ChampsAnnonce; numero?: number };
+
+// Rôle RÉDIGER de l'assistant : l'IA propose, la personne relit et modifie avant de publier.
+export async function proposerAnnonce(precedent: EtatRedaction, formData: FormData): Promise<EtatRedaction> {
+  const numero = (precedent.numero ?? 0) + 1;
+  const mots = String(formData.get("mots") ?? "").trim();
+  if (mots.length < 3) return { erreur: "Écris au moins quelques mots.", numero };
+  if (mots.length > 300) return { erreur: "Quelques mots suffisent (300 caractères maximum).", numero };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { erreur: "Ta session a expiré. Reconnecte-toi.", numero };
+
+  const proposition = await redigerAnnonce(mots);
+  if (!proposition) {
+    return { erreur: "L'assistant ne répond pas pour le moment. Remplis le formulaire à la main ci-dessous.", numero };
+  }
+  return { proposition, numero };
 }
