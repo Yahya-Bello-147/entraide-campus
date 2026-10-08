@@ -193,3 +193,21 @@ test("14. Léa ne peut pas créer de coordonnées au nom de Sam", async () => {
     .insert({ user_id: sam.id, email: "pirate@exemple.fr" });
   assert.ok(error);
 });
+
+test("15. Léa ne peut pas modifier les compétences de Sam ; Sam peut modifier les siennes", async () => {
+  await lea.client.from("profils").update({ competences: ["Piraté"] }).eq("id", sam.id);
+  const { error } = await sam.client.from("profils").update({ competences: ["Photo", "Retouche"] }).eq("id", sam.id);
+  assert.equal(error, null);
+  const { data } = await sam.client.from("profils").select("competences").eq("id", sam.id).single();
+  assert.deepEqual(data.competences, ["Photo", "Retouche"]);
+});
+
+test("16. La base refuse une liste de compétences abusive (trop longue ou trop de compétences)", async () => {
+  const tropLongue = await sam.client.from("profils").update({ competences: ["x".repeat(41)] }).eq("id", sam.id);
+  assert.ok(tropLongue.error);
+  const tropNombreuses = await sam.client
+    .from("profils")
+    .update({ competences: Array.from({ length: 16 }, (_, i) => `C${i}`) })
+    .eq("id", sam.id);
+  assert.ok(tropNombreuses.error);
+});

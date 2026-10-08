@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Carte } from "@/app/carte";
 import { FormulaireProfil } from "./formulaire-profil";
+import { ProfilIA } from "./profil-ia";
 
 export default async function PageProfil({
   searchParams,
@@ -15,7 +16,7 @@ export default async function PageProfil({
   if (!user) redirect("/connexion");
 
   const [{ data: profil }, { data: coordonnees }, { raison }] = await Promise.all([
-    supabase.from("profils").select("prenom").eq("id", user.id).maybeSingle(),
+    supabase.from("profils").select("prenom, competences").eq("id", user.id).maybeSingle(),
     supabase.from("coordonnees").select("email, telephone").eq("user_id", user.id).maybeSingle(),
     searchParams,
   ]);
@@ -38,6 +39,12 @@ export default async function PageProfil({
           }}
         />
       </Carte>
+
+      <div className="mt-10">
+        <Carte onglet="Mon profil IA">
+          <ProfilIA competencesActuelles={(profil?.competences as string[] | undefined) ?? []} />
+        </Carte>
+      </div>
     </main>
   );
 }
