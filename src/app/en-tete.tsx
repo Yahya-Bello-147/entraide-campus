@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { deconnexion } from "@/app/auth/actions";
+import { Navigation } from "./navigation";
 
-// Barre du haut : liens de navigation si connecté, sinon Connexion / Inscription.
+// Barre du haut : menu si connecté, sinon Connexion / Inscription.
 export async function EnTete() {
   const supabase = await createClient();
   const {
@@ -10,36 +10,27 @@ export async function EnTete() {
   } = await supabase.auth.getUser();
 
   return (
-    <header className="flex flex-wrap items-center justify-between gap-3 px-4 py-4 text-sm">
+    <header className="flex flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
       <Link
         href="/"
-        className="titre rounded-full border-2 border-white px-4 py-1 text-lg text-white"
+        className="titre rounded-full border-2 border-white px-5 py-1.5 text-xl text-white sm:text-2xl"
       >
         entraide
       </Link>
       {user ? (
-        <nav className="flex flex-wrap items-center gap-x-4 gap-y-1 font-semibold">
-          <Link href="/annonces" className="underline">
-            Annonces
-          </Link>
-          <Link href="/demandes" className="underline">
-            Mes demandes
-          </Link>
-          <Link href="/profil" className="underline">
-            Mon profil
-          </Link>
-          <form action={deconnexion}>
-            <button type="submit" className="whitespace-nowrap underline opacity-80">
-              Se déconnecter
-            </button>
-          </form>
-        </nav>
+        <Navigation />
       ) : (
-        <nav className="flex gap-4 font-semibold">
-          <Link href="/connexion" className="underline">
+        <nav className="flex gap-2 sm:gap-3">
+          <Link
+            href="/connexion"
+            className="titre rounded-full border-2 border-white px-4 py-2 text-base text-white hover:bg-white/15 sm:px-5 sm:text-lg"
+          >
             Connexion
           </Link>
-          <Link href="/inscription" className="underline">
+          <Link
+            href="/inscription"
+            className="titre rounded-full bg-creme px-4 py-2 text-base text-encre sm:px-5 sm:text-lg"
+          >
             Inscription
           </Link>
         </nav>
