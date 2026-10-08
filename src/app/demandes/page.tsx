@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Carte } from "@/app/carte";
@@ -16,6 +17,17 @@ type Coordonnees = { user_id: string; email: string; telephone: string | null };
 
 const STATUTS = { en_attente: "En attente", acceptee: "Acceptée", refusee: "Refusée" } as const;
 const formatDate = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long" });
+
+function BoutonEcrire({ demandeId, prenom }: { demandeId: string; prenom: string }) {
+  return (
+    <Link
+      href={`/messages/${demandeId}`}
+      className="titre mt-3 block rounded-full bg-bleu px-4 py-2 text-center text-lg text-creme"
+    >
+      Écrire à {prenom}
+    </Link>
+  );
+}
 
 function BlocCoordonnees({ c }: { c: Coordonnees | undefined }) {
   if (!c) return <p className="text-sm">Cette personne n&apos;a pas encore renseigné ses coordonnées.</p>;
@@ -95,7 +107,14 @@ export default async function PageDemandes() {
                 </button>
               </form>
             )}
-            {d.statut === "acceptee" ? <BlocCoordonnees c={coord.get(d.demandeur_id)} /> : <CadenasFerme />}
+            {d.statut === "acceptee" ? (
+              <>
+                <BlocCoordonnees c={coord.get(d.demandeur_id)} />
+                <BoutonEcrire demandeId={d.id} prenom={prenom.get(d.demandeur_id) ?? "cette personne"} />
+              </>
+            ) : (
+              <CadenasFerme />
+            )}
           </Carte>
         ))}
       </div>
@@ -111,7 +130,10 @@ export default async function PageDemandes() {
               <span className="text-sm"> · {formatDate.format(new Date(d.created_at))}</span>
             </p>
             {d.statut === "acceptee" ? (
-              <BlocCoordonnees c={coord.get(d.destinataire_id)} />
+              <>
+                <BlocCoordonnees c={coord.get(d.destinataire_id)} />
+                <BoutonEcrire demandeId={d.id} prenom={prenom.get(d.destinataire_id) ?? "cette personne"} />
+              </>
             ) : d.statut === "refusee" ? (
               <p className="text-sm font-semibold">Cette personne a refusé la demande.</p>
             ) : (

@@ -7,6 +7,7 @@ import { deconnexion } from "@/app/auth/actions";
 const LIENS = [
   { href: "/annonces", libelle: "Annonces" },
   { href: "/demandes", libelle: "Mes demandes" },
+  { href: "/messages", libelle: "Messages" },
   { href: "/profil", libelle: "Mon profil" },
 ];
 
