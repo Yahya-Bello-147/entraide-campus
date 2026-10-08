@@ -1,0 +1,3 @@
+# Fichiers binaires : ne jamais convertir les fins de ligne
+*.pdf binary
+*.ico binary
