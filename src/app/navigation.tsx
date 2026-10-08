@@ -35,10 +35,11 @@ export function Navigation() {
           </Link>
         );
       })}
-      <form action={deconnexion}>
+      {/* Même forme que les onglets, mais bleu nuit : c'est une action (sortir), pas une page. */}
+      <form action={deconnexion} className="sm:ml-2">
         <button
           type="submit"
-          className="rounded-full px-3 py-2 text-sm font-semibold whitespace-nowrap text-white/80 underline hover:text-white"
+          className={`${styleBouton} bg-encre text-white hover:bg-encre/80`}
         >
           Se déconnecter
         </button>
