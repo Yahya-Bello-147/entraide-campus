@@ -1,18 +1,27 @@
 "use client";
 
 import { useActionState } from "react";
-import { publierAnnonce } from "../actions";
+import { publierAnnonce, type EtatPublication } from "../actions";
 import { CATEGORIES, TYPES } from "@/lib/annonces/valider";
 
 const styleChamp =
   "rounded-lg border-2 border-encre/20 bg-white px-3 py-2 text-base text-encre focus:border-bleu focus:outline-none";
 
+type Etat = EtatPublication & { essai?: number };
+
+// Chaque réponse porte un numéro d'essai : le formulaire est reconstruit avec ce qui a été tapé.
+// (Sinon le navigateur vide le menu « Catégorie » après une erreur et bloque l'envoi suivant.)
+async function publierEtNumeroter(precedent: Etat, formData: FormData): Promise<Etat> {
+  const resultat = await publierAnnonce(precedent, formData);
+  return { ...resultat, essai: (precedent.essai ?? 0) + 1 };
+}
+
 export function FormulaireAnnonce() {
-  const [etat, formAction, enCours] = useActionState(publierAnnonce, {});
+  const [etat, formAction, enCours] = useActionState(publierEtNumeroter, {});
   const v = etat.valeurs;
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form key={etat.essai ?? 0} action={formAction} className="flex flex-col gap-4">
       <fieldset className="flex gap-3">
         <legend className="mb-1 text-sm font-semibold">Type</legend>
         {Object.entries(TYPES).map(([valeur, libelle], i) => (
@@ -71,12 +80,39 @@ export function FormulaireAnnonce() {
         </p>
       )}
 
+      {etat.avertissement && (
+        <div role="alert" className="rounded-xl border-2 border-erreur bg-white p-4 text-sm">
+          <p className="mb-2 font-bold">🤖 L&apos;assistant d&apos;annonce a repéré un moyen de te contacter directement :</p>
+          <ul className="mb-3 list-disc space-y-1 pl-5">
+            {etat.avertissement.raisons.map((r, i) => (
+              <li key={i}>
+                {r.extrait && <strong>« {r.extrait} » : </strong>}
+                {r.explication}
+              </li>
+            ))}
+          </ul>
+          <p className="mb-3">
+            Tes coordonnées seront partagées <strong>seulement après ton accord</strong>. Corrige le texte ci-dessus
+            puis clique sur « Publier l&apos;annonce », ou publie quand même si c&apos;est voulu.
+          </p>
+          <button
+            type="submit"
+            name="confirmer"
+            value={etat.avertissement.empreinte}
+            disabled={enCours}
+            className="rounded-full border-2 border-encre px-4 py-2 font-semibold disabled:opacity-50"
+          >
+            Publier quand même
+          </button>
+        </div>
+      )}
+
       <button
         type="submit"
         disabled={enCours}
         className="titre rounded-full bg-bleu px-4 py-3 text-lg text-creme disabled:opacity-50"
       >
-        {enCours ? "Publication…" : "Publier l'annonce"}
+        {enCours ? "Vérification et publication…" : "Publier l'annonce"}
       </button>
     </form>
   );
