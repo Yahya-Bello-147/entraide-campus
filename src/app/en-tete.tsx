@@ -15,7 +15,7 @@ export async function EnTete() {
         href="/"
         className="titre rounded-full border-2 border-white px-5 py-1.5 text-xl text-white sm:text-2xl"
       >
-        entraide
+        Entraide
       </Link>
       {user ? (
         <Navigation />
