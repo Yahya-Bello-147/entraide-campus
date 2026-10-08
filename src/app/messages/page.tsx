@@ -57,7 +57,7 @@ export default async function PageMessages() {
           const autreId = d.demandeur_id === user.id ? d.destinataire_id : d.demandeur_id;
           const m = dernier.get(d.id);
           return (
-            <Link key={d.id} href={`/messages/${d.id}`} className="block">
+            <Link key={d.id} href={`/messages/${d.id}`} className="block min-w-0">
               <Carte onglet={prenom.get(autreId) ?? "Conversation"}>
                 <p className="mb-1 text-sm font-semibold">« {d.annonces?.titre ?? "annonce supprimée"} »</p>
                 <p className="truncate text-sm">

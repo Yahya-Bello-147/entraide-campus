@@ -102,14 +102,14 @@ export function FormulaireAnnonce() {
           Ne mets ni téléphone, ni e-mail, ni lien de profil : tes coordonnées ne seront montrées qu&apos;après ton accord.
         </p>
 
-        <div className="flex gap-3">
-          <label className="flex flex-1 flex-col gap-1 text-sm font-semibold">
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <label className="flex min-w-0 flex-1 flex-col gap-1 text-sm font-semibold">
             Prix (facultatif)
-            <input name="prix" defaultValue={v?.prix} inputMode="decimal" className={styleChamp} placeholder="Ex. 20" />
+            <input name="prix" defaultValue={v?.prix} inputMode="decimal" className={`${styleChamp} w-full min-w-0`} placeholder="Ex. 20" />
           </label>
-          <label className="flex flex-1 flex-col gap-1 text-sm font-semibold">
+          <label className="flex min-w-0 flex-1 flex-col gap-1 text-sm font-semibold">
             Lieu (facultatif)
-            <input name="lieu" defaultValue={v?.lieu} maxLength={100} className={styleChamp} placeholder="Ex. Bordeaux centre" />
+            <input name="lieu" defaultValue={v?.lieu} maxLength={100} className={`${styleChamp} w-full min-w-0`} placeholder="Ex. Bordeaux centre" />
           </label>
         </div>
 
