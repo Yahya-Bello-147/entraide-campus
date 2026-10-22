@@ -24,6 +24,7 @@ export async function demanderContact(formData: FormData) {
   await supabase.from("demandes_contact").insert({ annonce_id: annonceId });
 
   revalidatePath("/annonces");
+  revalidatePath(`/annonces/${annonceId}`);
   revalidatePath("/demandes");
 }
 

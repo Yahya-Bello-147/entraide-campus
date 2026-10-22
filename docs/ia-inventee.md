@@ -44,6 +44,13 @@ Deux niveaux, au clic sur « Publier l'annonce » :
 Résultats sur les cas de test (`npm run test:ia`) : 7/7 conformes (normal, numéro en lettres, Instagram,
 Leboncoin déguisé, e-mail déguisé, texte piégé, annonce du MacBook sans fausse alerte).
 
+### Faiblesse trouvée et réparée (22 oct)
+En testant la modification d'annonce, « Mon snap c'est sam.crepes » est passé : l'IA était
+momentanément indisponible (limite de l'offre gratuite), et la vérification simple ne connaissait pas
+les pseudos. Réparation : la vérification simple repère aussi un réseau social **suivi d'un pseudo** et
+un portable **écrit en lettres** (« zéro six… »), sans fausse alerte sur « montage pour TikTok ».
+La modification d'une annonce passe par exactement les mêmes contrôles que la publication.
+
 ## Rôle RÉDIGER (bonus, en ligne)
 En haut de « Publier une annonce » : « ✨ Décris ton annonce en quelques mots ». L'IA
 (`src/lib/ia/rediger-annonce.ts`) propose type, catégorie, titre, description, prix et lieu, qui

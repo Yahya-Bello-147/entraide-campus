@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { proposerAnnonce, publierAnnonce, type EtatPublication, type EtatRedaction } from "../actions";
-import { CATEGORIES, TYPES } from "@/lib/annonces/valider";
+import { CATEGORIES, TYPES, type ChampsAnnonce } from "@/lib/annonces/valider";
 
 const styleChamp =
   "rounded-lg border-2 border-encre/20 bg-white px-3 py-2 text-base text-encre focus:border-bleu focus:outline-none";
@@ -10,27 +10,39 @@ const styleChamp =
 type Etat = EtatPublication & { essai?: number; moment?: number };
 type EtatProposition = EtatRedaction & { moment?: number };
 
-// Chaque réponse porte un numéro d'essai : le formulaire est reconstruit avec ce qui a été tapé.
-// (Sinon le navigateur vide le menu « Catégorie » après une erreur et bloque l'envoi suivant.)
-async function publierEtNumeroter(precedent: Etat, formData: FormData): Promise<Etat> {
-  const resultat = await publierAnnonce(precedent, formData);
-  return { ...resultat, essai: (precedent.essai ?? 0) + 1, moment: Date.now() };
-}
-
 async function proposerEtDater(precedent: EtatProposition, formData: FormData): Promise<EtatProposition> {
   return { ...(await proposerAnnonce(precedent, formData)), moment: Date.now() };
 }
 
-export function FormulaireAnnonce() {
-  const [etat, formAction, enCours] = useActionState(publierEtNumeroter, {});
+type Props = {
+  // Publier (par défaut) ou modifier une annonce existante (action liée à son identifiant).
+  action?: (etat: EtatPublication, formData: FormData) => Promise<EtatPublication>;
+  initial?: ChampsAnnonce;
+  libelleBouton?: string;
+  avecAssistant?: boolean;
+};
+
+export function FormulaireAnnonce({
+  action = publierAnnonce,
+  initial,
+  libelleBouton = "Publier l'annonce",
+  avecAssistant = true,
+}: Props) {
+  // Chaque réponse porte un numéro d'essai : le formulaire est reconstruit avec ce qui a été tapé.
+  // (Sinon le navigateur vide le menu « Catégorie » après une erreur et bloque l'envoi suivant.)
+  const [etat, formAction, enCours] = useActionState(async (precedent: Etat, formData: FormData): Promise<Etat> => {
+    const resultat = await action(precedent, formData);
+    return { ...resultat, essai: (precedent.essai ?? 0) + 1, moment: Date.now() };
+  }, {});
   const [redaction, proposerAction, redactionEnCours] = useActionState(proposerEtDater, {});
 
   // Le formulaire reprend la réponse la plus récente : la proposition de l'IA, ou ce qui a été tapé.
   const propositionPlusRecente = Boolean(redaction.proposition) && (redaction.moment ?? 0) > (etat.moment ?? 0);
-  const v = propositionPlusRecente ? redaction.proposition : etat.valeurs;
+  const v = propositionPlusRecente ? redaction.proposition : (etat.valeurs ?? initial);
 
   return (
     <div className="flex flex-col gap-6">
+      {avecAssistant && (
       <form action={proposerAction} className="flex flex-col gap-2 rounded-xl border-2 border-dashed border-encre/40 bg-white/60 p-4">
         <label className="flex flex-col gap-1 text-sm font-semibold">
           ✨ Décris ton annonce en quelques mots, l&apos;assistant la rédige pour toi
@@ -59,6 +71,7 @@ export function FormulaireAnnonce() {
           </p>
         )}
       </form>
+      )}
 
       <form key={`${etat.essai ?? 0}-${redaction.numero ?? 0}`} action={formAction} className="flex flex-col gap-4">
         <fieldset className="flex gap-3">
@@ -151,7 +164,7 @@ export function FormulaireAnnonce() {
           disabled={enCours}
           className="titre rounded-full bg-bleu px-4 py-3 text-lg text-creme disabled:opacity-50"
         >
-          {enCours ? "Vérification et publication…" : "Publier l'annonce"}
+          {enCours ? "Vérification…" : libelleBouton}
         </button>
       </form>
     </div>

@@ -14,6 +14,7 @@ type Annonce = {
   description: string;
   prix: number | null;
   lieu: string | null;
+  statut: "active" | "pourvue";
   created_at: string;
 };
 
@@ -41,18 +42,21 @@ export default async function PageAnnonces({
   if (!user) redirect("/connexion");
 
   // Filtres : on ne garde que des valeurs connues.
-  const { type, categorie } = await searchParams;
+  const { type, categorie, mes } = await searchParams;
   const filtreType = typeof type === "string" && Object.hasOwn(TYPES, type) ? type : "";
   const filtreCategorie =
     typeof categorie === "string" && Object.hasOwn(CATEGORIES, categorie) ? categorie : "";
+  const mesAnnonces = mes === "1";
 
   let requete = supabase
     .from("annonces")
-    .select("id, auteur_id, type, categorie, titre, description, prix, lieu, created_at")
+    .select("id, auteur_id, type, categorie, titre, description, prix, lieu, statut, created_at")
     .order("created_at", { ascending: false })
     .limit(100);
   if (filtreType) requete = requete.eq("type", filtreType);
   if (filtreCategorie) requete = requete.eq("categorie", filtreCategorie);
+  // « Mes annonces » : toutes les miennes, même pourvues. Sinon : seulement les annonces actives.
+  requete = mesAnnonces ? requete.eq("auteur_id", user.id) : requete.eq("statut", "active");
 
   const { data, error } = await requete;
   const annonces = (data ?? []) as Annonce[];
@@ -97,10 +101,14 @@ export default async function PageAnnonces({
             </option>
           ))}
         </select>
+        <label className="flex cursor-pointer items-center gap-2 rounded-full border-2 border-white px-3 py-2 text-sm font-semibold has-[:checked]:bg-creme has-[:checked]:text-encre">
+          <input type="checkbox" name="mes" value="1" defaultChecked={mesAnnonces} className="accent-bleu" />
+          Mes annonces
+        </label>
         <button type="submit" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-encre">
           Filtrer
         </button>
-        {(filtreType || filtreCategorie) && (
+        {(filtreType || filtreCategorie || mesAnnonces) && (
           <Link href="/annonces" className="self-center text-sm underline">
             Effacer les filtres
           </Link>
@@ -125,8 +133,17 @@ export default async function PageAnnonces({
               {annonce.auteur_id === user.id && (
                 <span className="rounded-full bg-bleu px-2 py-1 text-white">Mon annonce</span>
               )}
+              {annonce.statut === "pourvue" && (
+                <span className="rounded-full bg-encre px-2 py-1 text-white">
+                  {annonce.categorie === "objets" ? "Vendue" : "Pourvue"}
+                </span>
+              )}
             </div>
-            <h2 className="mb-2 text-lg font-bold break-words">{annonce.titre}</h2>
+            <h2 className="mb-2 text-lg font-bold break-words">
+              <Link href={`/annonces/${annonce.id}`} className="hover:underline">
+                {annonce.titre}
+              </Link>
+            </h2>
             <p className="mb-3 line-clamp-4 text-sm break-words whitespace-pre-line">{annonce.description}</p>
             <p className="text-sm font-semibold">
               {annonce.prix !== null && <span>{formatPrix.format(annonce.prix)} · </span>}
@@ -134,6 +151,9 @@ export default async function PageAnnonces({
               <span className="font-normal">{formatDate.format(new Date(annonce.created_at))}</span>
             </p>
             <p className="mt-1 text-sm">par {prenom.get(annonce.auteur_id) ?? "un étudiant"}</p>
+            <Link href={`/annonces/${annonce.id}`} className="mt-3 inline-block text-sm font-semibold underline">
+              {annonce.auteur_id === user.id ? "Voir · modifier" : "Voir l'annonce en entier"}
+            </Link>
 
             {annonce.auteur_id !== user.id && (
               <div className="mt-4">

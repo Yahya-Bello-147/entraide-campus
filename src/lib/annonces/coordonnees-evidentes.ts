@@ -1,7 +1,7 @@
 // Vérification simple, SANS IA : repère les coordonnées évidentes dans le texte d'une annonce.
 // Filet de sécurité de la règle d'or n°1, qui marche même si l'IA est en panne.
 
-export type CoordonneeTrouvee = { type: "téléphone" | "e-mail" | "lien"; extrait: string };
+export type CoordonneeTrouvee = { type: "téléphone" | "e-mail" | "lien" | "réseau social"; extrait: string };
 
 const MOTIFS: { type: CoordonneeTrouvee["type"]; motif: RegExp }[] = [
   // 06 12 34 56 78, 0612345678, 06.12.34.56.78, +33 6 12 34 56 78, +336…
@@ -12,6 +12,16 @@ const MOTIFS: { type: CoordonneeTrouvee["type"]; motif: RegExp }[] = [
     type: "lien",
     motif: /\b(?:https?:\/\/|www\.)\S+|\b[a-z0-9-]+\.(?:fr|com|net|org|io|me|co|be|eu)(?:\/\S*)?\b/gi,
   },
+  // Ajouté après une faiblesse trouvée en test : quand l'IA est indisponible, ceci reste bloqué.
+  // Un réseau social SUIVI d'un pseudo (« mon snap c'est sam.crepes », « insta : @sam »).
+  // Une simple mention (« montage pour TikTok et Instagram ») ne déclenche rien.
+  {
+    type: "réseau social",
+    motif:
+      /\b(?:snap(?:chat)?|insta(?:gram)?|whats ?app|discord|telegram|tik ?tok|linkedin|facebook|twitter)\b[^\n.,;!?()]{0,25}?(?:@[\w.]{3,}|[a-z0-9][\w#-]*[._#][\w.#-]+)/gi,
+  },
+  // Un numéro de portable écrit en lettres (« zéro six douze… »).
+  { type: "téléphone", motif: /\bz[ée]ro[\s-]+(?:six|sept)\b/gi },
 ];
 
 export function detecterCoordonneesEvidentes(texte: string): CoordonneeTrouvee[] {

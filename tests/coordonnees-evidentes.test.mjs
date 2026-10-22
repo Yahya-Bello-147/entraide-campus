@@ -34,3 +34,31 @@ test("renvoie l'extrait trouvé pour l'afficher à la personne", () => {
   const [d] = detecterCoordonneesEvidentes("Mon numéro : 06 12 34 56 78.");
   assert.equal(d.extrait, "06 12 34 56 78");
 });
+
+// Ajouté après la découverte d'une faiblesse : si l'IA est indisponible, ces cas doivent quand même être bloqués.
+test("repère un pseudo de réseau social annoncé (même sans l'IA)", () => {
+  for (const texte of [
+    "Mon snap c'est sam.crepes, écris-moi !",
+    "insta : @sam_photo",
+    "Contacte-moi sur Instagram sam.photo",
+    "mon whatsapp est le suivant : sam.martin",
+    "Discord : sam#1234",
+  ]) {
+    assert.deepEqual(types(texte), ["réseau social"], texte);
+  }
+});
+
+test("ne confond pas une simple mention de réseau social avec un pseudo", () => {
+  for (const texte of [
+    "Je fais du montage vidéo pour TikTok et Instagram.",
+    "Community manager : Instagram, TikTok, planning éditorial.",
+    "Je propose des photos pour vos réseaux (Insta, Snap).",
+  ]) {
+    assert.deepEqual(types(texte), [], texte);
+  }
+});
+
+test("repère un numéro de portable écrit en lettres", () => {
+  assert.deepEqual(types("Appelle-moi au zéro six douze trente-quatre"), ["téléphone"]);
+  assert.deepEqual(types("zero sept 12 34 56 78"), ["téléphone"]);
+});
