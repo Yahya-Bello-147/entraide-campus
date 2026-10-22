@@ -33,6 +33,11 @@
 ## Outils
 Next.js (TypeScript, Tailwind) · GitHub · Vercel · Supabase. Rien d'autre sans me demander.
 
+## Qui peut s'inscrire
+Seulement les adresses de l'école : @mail-esd.com, @mail-esp.com (étudiants), @ecole-digital.com (profs et personnel).
+Vérifié sur la page (`src/lib/auth/domaines.ts`) ET refusé par la base (`supabase/migrations/…_domaines_ecole.sql`).
+Limite connue : sans confirmation par e-mail, on ne prouve pas que la personne possède l'adresse (amélioration prévue).
+
 ## Les 3 règles d'or (toujours vraies, protégées dans la base avec la RLS)
 1. Mes coordonnées ne sont visibles qu'après mon accord.
 2. Je ne peux modifier que mes propres annonces.

@@ -7,12 +7,13 @@ type Props = {
   action: (etat: EtatFormulaire, formData: FormData) => Promise<EtatFormulaire>;
   libelleBouton: string;
   autocompleteMotDePasse: "new-password" | "current-password";
+  aideEmail?: string;
 };
 
 const styleChamp =
   "rounded-lg border-2 border-encre/20 bg-white px-3 py-2 text-base text-encre focus:border-bleu focus:outline-none";
 
-export function FormulaireAuth({ action, libelleBouton, autocompleteMotDePasse }: Props) {
+export function FormulaireAuth({ action, libelleBouton, autocompleteMotDePasse, aideEmail }: Props) {
   const [etat, formAction, enCours] = useActionState(action, {});
 
   return (
@@ -20,6 +21,7 @@ export function FormulaireAuth({ action, libelleBouton, autocompleteMotDePasse }
       <label className="flex flex-col gap-1 text-sm font-semibold">
         E-mail
         <input type="email" name="email" required autoComplete="email" className={styleChamp} />
+        {aideEmail && <span className="text-xs font-normal">{aideEmail}</span>}
       </label>
       <label className="flex flex-col gap-1 text-sm font-semibold">
         Mot de passe

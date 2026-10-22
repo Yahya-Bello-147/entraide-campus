@@ -12,6 +12,7 @@ export default function PageInscription() {
           action={inscription}
           libelleBouton="Créer mon compte"
           autocompleteMotDePasse="new-password"
+          aideEmail="Utilise ton adresse de l'école : @mail-esd.com, @mail-esp.com ou @ecole-digital.com."
         />
       </Carte>
       <p className="mt-6 text-center text-sm">
