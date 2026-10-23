@@ -10,20 +10,17 @@ type Props = {
   aideEmail?: string;
 };
 
-const styleChamp =
-  "rounded-lg border-2 border-encre/20 bg-white px-3 py-2 text-base text-encre focus:border-bleu focus:outline-none";
-
 export function FormulaireAuth({ action, libelleBouton, autocompleteMotDePasse, aideEmail }: Props) {
   const [etat, formAction, enCours] = useActionState(action, {});
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
-      <label className="flex flex-col gap-1 text-sm font-semibold">
+      <label className="etiquette">
         E-mail
-        <input type="email" name="email" required autoComplete="email" className={styleChamp} />
-        {aideEmail && <span className="text-xs font-normal">{aideEmail}</span>}
+        <input type="email" name="email" required autoComplete="email" placeholder="prenom.nom@mail-esd.com" className="champ" />
+        {aideEmail && <span className="text-xs font-normal text-gris">{aideEmail}</span>}
       </label>
-      <label className="flex flex-col gap-1 text-sm font-semibold">
+      <label className="etiquette">
         Mot de passe
         <input
           type="password"
@@ -31,21 +28,17 @@ export function FormulaireAuth({ action, libelleBouton, autocompleteMotDePasse, 
           required
           minLength={6}
           autoComplete={autocompleteMotDePasse}
-          className={styleChamp}
+          className="champ"
         />
       </label>
 
       {etat.erreur && (
-        <p role="alert" className="text-sm font-semibold text-erreur">
+        <p role="alert" className="alerte-erreur">
           {etat.erreur}
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={enCours}
-        className="titre rounded-full bg-bleu px-4 py-3 text-lg text-creme disabled:opacity-50"
-      >
+      <button type="submit" disabled={enCours} className="bouton bouton-principal mt-1 w-full">
         {enCours ? "Patiente…" : libelleBouton}
       </button>
     </form>

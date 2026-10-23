@@ -1,36 +1,178 @@
 @import "tailwindcss";
 
-/* Palette inspirée de l'affiche de référence : fond bleu vif, titres crème, cartes bleu clair. */
+/* CampusLink — fond clair, cartes blanches qui flottent, dégradé violet → bleu pour l'essentiel. */
 :root {
-  --bleu: #0b7fd6;
-  --creme: #fff3c4;
-  --cyan: #a7ecf4;
-  --encre: #0d1b2a;
-  --erreur: #b42318;
+  --fond: #f6f7fb;
+  --encre: #111827;
+  --gris: #6b7280;
+  --ligne: #e5e7eb;
+  --violet: #7c3aed;
+  --indigo: #4f46e5;
+  --bleu: #2563eb;
+  --rose: #ec4899;
+  --erreur: #dc2626;
+  --succes: #059669;
 }
 
 @theme inline {
-  --color-bleu: var(--bleu);
-  --color-creme: var(--creme);
-  --color-cyan: var(--cyan);
+  --color-fond: var(--fond);
   --color-encre: var(--encre);
+  --color-gris: var(--gris);
+  --color-ligne: var(--ligne);
+  --color-violet: var(--violet);
+  --color-indigo: var(--indigo);
+  --color-bleu: var(--bleu);
+  --color-rose: var(--rose);
   --color-erreur: var(--erreur);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-titre: var(--font-fraunces);
+  --color-succes: var(--succes);
+  --font-sans: var(--font-jakarta), system-ui, sans-serif;
 }
 
 body {
-  background: var(--bleu);
-  color: #ffffff;
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  background: var(--fond);
+  color: var(--encre);
+  font-family: var(--font-jakarta), system-ui, sans-serif;
 }
 
-/* Titres façon « portfolio étudiant » : serif très gras, aux formes arrondies. */
-.titre {
-  font-family: var(--font-fraunces), Georgia, serif;
-  font-weight: 800;
-  font-variation-settings: "SOFT" 100, "opsz" 144;
-  letter-spacing: -0.02em;
-  line-height: 0.95;
+@layer components {
+  .titre {
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .degrade {
+    background-image: linear-gradient(135deg, var(--violet), var(--bleu));
+  }
+
+  .texte-degrade {
+    background-image: linear-gradient(135deg, var(--violet), var(--bleu));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .carte {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgb(17 24 39 / 0.07);
+  }
+
+  .carte-survol {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .carte-survol:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 32px rgb(17 24 39 / 0.11);
+  }
+
+  .bouton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0.65rem 1.1rem;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: transform 0.12s ease, filter 0.12s ease, background-color 0.12s ease;
+    cursor: pointer;
+  }
+  .bouton:active {
+    transform: scale(0.98);
+  }
+  .bouton:disabled {
+    opacity: 0.55;
+    cursor: wait;
+  }
+  .bouton-principal {
+    color: #ffffff;
+    background-image: linear-gradient(135deg, var(--violet), var(--bleu));
+    box-shadow: 0 8px 20px rgb(79 70 229 / 0.3);
+  }
+  .bouton-principal:hover {
+    filter: brightness(1.08);
+  }
+  .bouton-secondaire {
+    color: #374151;
+    background: #f3f4f6;
+  }
+  .bouton-secondaire:hover {
+    background: #e5e7eb;
+  }
+  .bouton-contour {
+    color: var(--encre);
+    background: #ffffff;
+    border: 1.5px solid var(--ligne);
+  }
+  .bouton-contour:hover {
+    border-color: #c7d2fe;
+    background: #f5f3ff;
+  }
+  .bouton-danger {
+    color: #ffffff;
+    background: var(--erreur);
+  }
+  .bouton-danger:hover {
+    filter: brightness(1.08);
+  }
+
+  .champ {
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    padding: 0.65rem 0.9rem;
+    border-radius: 14px;
+    border: 1.5px solid var(--ligne);
+    background: #ffffff;
+    color: var(--encre);
+    font-size: 1rem;
+    transition: border-color 0.12s ease, box-shadow 0.12s ease;
+  }
+  .champ:focus {
+    outline: none;
+    border-color: var(--indigo);
+    box-shadow: 0 0 0 4px rgb(79 70 229 / 0.15);
+  }
+
+  .etiquette {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .alerte-erreur {
+    border-radius: 14px;
+    background: #fef2f2;
+    color: #b91c1c;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .alerte-succes {
+    border-radius: 14px;
+    background: #ecfdf5;
+    color: #047857;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  /* Formes floues de couleur derrière un en-tête (comme sur la maquette). */
+  .halo {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(70px);
+    pointer-events: none;
+  }
+
+  :focus-visible {
+    outline: 3px solid rgb(79 70 229 / 0.5);
+    outline-offset: 2px;
+  }
 }

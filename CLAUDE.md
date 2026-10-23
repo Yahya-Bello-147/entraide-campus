@@ -1,4 +1,4 @@
-# Fiche d'identité — L'Entraide du Campus
+# Fiche d'identité — CampusLink (ex « L'Entraide du Campus »)
 
 ## Le projet
 - **Pour qui** : les étudiants du campus.
@@ -29,6 +29,14 @@
   2. L'annonce et la demande de contact : Léa demande, Sam accepte, les coordonnées apparaissent (palier 1).
   3. La messagerie : Léa et Sam s'écrivent (palier 2, règle d'or n°3).
 - On ajoute à l'existant, on ne refait pas ce qui marche.
+
+## Design (refonte du 23 oct, validée sur maquette)
+- Fond clair `#f6f7fb`, cartes blanches qui flottent (classe `carte`), dégradé violet → bleu pour l'essentiel
+  (classes `degrade`, `bouton-principal`), formes floues `halo` derrière les en-têtes.
+- Police Plus Jakarta Sans partout (plus de police à empattements). Une couleur + une icône par catégorie
+  (`src/lib/annonces/style-categories.ts`). Icônes maison au trait (`src/app/icone.tsx`), pas d'emoji.
+- Navigation : barre du haut sur ordinateur (≥ 1024 px), barre d'onglets en bas sur téléphone et tablette.
+- Composants communs : `src/app/ui.tsx` (Avatar, PastilleCategorie, VignetteCategorie, TitrePage, EtatVide).
 
 ## Outils
 Next.js (TypeScript, Tailwind) · GitHub · Vercel · Supabase. Rien d'autre sans me demander.

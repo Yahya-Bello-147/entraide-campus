@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { Carte } from "@/app/carte";
+import { deconnexion } from "@/app/auth/actions";
+import { Icone } from "@/app/icone";
+import { Avatar } from "@/app/ui";
 import { FormulaireProfil } from "./formulaire-profil";
 import { ProfilIA } from "./profil-ia";
 
@@ -20,30 +22,60 @@ export default async function PageProfil({
     supabase.from("coordonnees").select("email, telephone").eq("user_id", user.id).maybeSingle(),
     searchParams,
   ]);
+  const prenom = (profil?.prenom as string | undefined) ?? null;
 
   return (
-    <main className="mx-auto flex w-full max-w-lg flex-1 flex-col px-4 py-10">
-      <h1 className="titre mb-6 text-center text-5xl text-creme">Mon profil</h1>
-      {raison === "incomplet" && !(profil && coordonnees) && (
-        <p role="alert" className="mb-6 rounded-xl bg-creme p-4 font-semibold text-encre">
-          Complète d&apos;abord ton profil : ton prénom s&apos;affichera sur tes annonces et tes
-          coordonnées seront partagées après accord.
-        </p>
-      )}
-      <Carte onglet="Profil">
-        <FormulaireProfil
-          initial={{
-            prenom: profil?.prenom ?? "",
-            email: coordonnees?.email ?? user.email ?? "",
-            telephone: coordonnees?.telephone ?? "",
-          }}
-        />
-      </Carte>
+    <main className="flex flex-1 flex-col">
+      <section className="relative overflow-hidden bg-[#312e81] text-white md:rounded-b-[2.5rem]">
+        <div className="halo -top-24 -left-16 h-72 w-72 bg-violet opacity-80" />
+        <div className="halo -top-10 -right-24 h-64 w-64 bg-bleu opacity-70" />
+        <div className="relative mx-auto flex max-w-5xl items-center gap-4 px-4 py-8 sm:px-6">
+          <span className="rounded-full border-2 border-white/40 p-1">
+            <Avatar prenom={prenom} taille={64} />
+          </span>
+          <div className="min-w-0 flex-1">
+            <h1 className="titre truncate text-3xl">{prenom ?? "Mon profil"}</h1>
+            <p className="truncate text-sm text-white/80">{user.email}</p>
+          </div>
+          <form action={deconnexion}>
+            <button type="submit" className="bouton border border-white/40 bg-white/15 text-white hover:bg-white/25">
+              <Icone nom="sortie" taille={18} />
+              <span className="hidden sm:inline">Se déconnecter</span>
+            </button>
+          </form>
+        </div>
+      </section>
 
-      <div className="mt-10">
-        <Carte onglet="Mon profil IA">
+      <div className="mx-auto grid w-full max-w-5xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2">
+        <div className="flex min-w-0 flex-col gap-4">
+          {raison === "incomplet" && !(profil && coordonnees) && (
+            <p role="alert" className="alerte-erreur">
+              Complète d&apos;abord ton profil : ton prénom s&apos;affichera sur tes annonces et tes coordonnées seront partagées
+              après accord.
+            </p>
+          )}
+          <section className="carte p-5 sm:p-6">
+            <h2 className="mb-4 text-lg font-extrabold">Mes informations</h2>
+            <FormulaireProfil
+              initial={{
+                prenom: profil?.prenom ?? "",
+                email: coordonnees?.email ?? user.email ?? "",
+                telephone: coordonnees?.telephone ?? "",
+              }}
+            />
+          </section>
+        </div>
+
+        <section className="carte min-w-0 p-5 sm:p-6">
+          <h2 className="mb-1 flex items-center gap-2 text-lg font-extrabold">
+            <span className="degrade flex h-8 w-8 items-center justify-center rounded-xl text-white">
+              <Icone nom="etincelles" taille={17} />
+            </span>
+            Mes compétences
+          </h2>
+          <p className="mb-5 text-sm text-gris">Dépose ton CV : l&apos;IA propose tes compétences, tu les relis et tu valides.</p>
           <ProfilIA competencesActuelles={(profil?.competences as string[] | undefined) ?? []} />
-        </Carte>
+        </section>
       </div>
     </main>
   );

@@ -3,6 +3,7 @@
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { envoyerMessage } from "../actions";
+import { Icone } from "@/app/icone";
 
 const RAFRAICHIR_MS = 5000;
 
@@ -25,7 +26,7 @@ export function FormulaireMessage({ demandeId }: { demandeId: string }) {
           defaultValue={etat.brouillon}
           required
           maxLength={1000}
-          rows={2}
+          rows={1}
           placeholder="Écris ton message…"
           aria-label="Ton message"
           onKeyDown={(e) => {
@@ -35,18 +36,19 @@ export function FormulaireMessage({ demandeId }: { demandeId: string }) {
               e.currentTarget.form?.requestSubmit();
             }
           }}
-          className="min-w-0 flex-1 resize-none rounded-xl border-2 border-encre/20 bg-white px-3 py-2 text-base text-encre focus:border-bleu focus:outline-none"
+          className="champ min-h-12 flex-1 resize-none rounded-3xl"
         />
         <button
           type="submit"
           disabled={enCours}
-          className="titre self-end rounded-full bg-creme px-5 py-3 text-lg text-encre disabled:opacity-50"
+          aria-label="Envoyer le message"
+          className="degrade flex h-12 w-12 shrink-0 items-center justify-center self-end rounded-full text-white shadow-[0_6px_16px_rgb(79_70_229/0.35)] transition hover:brightness-110 disabled:opacity-50"
         >
-          {enCours ? "…" : "Envoyer"}
+          <Icone nom="envoyer" taille={20} />
         </button>
       </div>
       {etat.erreur && (
-        <p role="alert" className="rounded-lg bg-creme px-3 py-2 text-sm font-semibold text-erreur">
+        <p role="alert" className="alerte-erreur">
           {etat.erreur}
         </p>
       )}

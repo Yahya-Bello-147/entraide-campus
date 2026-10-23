@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { Carte } from "@/app/carte";
+import { Icone } from "@/app/icone";
+import { TitrePage } from "@/app/ui";
 import { FormulaireAnnonce } from "../../nouvelle/formulaire-annonce";
 import { modifierAnnonce } from "../../actions";
 
@@ -22,13 +23,13 @@ export default async function PageModifierAnnonce({ params }: { params: Promise<
   if (!annonce || annonce.auteur_id !== user.id) notFound();
 
   return (
-    <main className="mx-auto flex w-full max-w-lg flex-1 flex-col px-4 py-10">
-      <Link href={`/annonces/${id}`} className="mb-4 text-sm font-semibold underline">
-        ← Retour à l&apos;annonce
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 py-6 sm:px-6 sm:py-10">
+      <Link href={`/annonces/${id}`} className="mb-4 inline-flex items-center gap-1 self-start text-sm font-semibold text-gris hover:text-encre">
+        <Icone nom="retour" taille={18} />
+        Retour à l&apos;annonce
       </Link>
-      <h1 className="titre mb-6 text-center text-5xl text-creme">Modifier l&apos;annonce</h1>
-      <Carte onglet="Modification">
-        <FormulaireAnnonce
+      <TitrePage titre="Modifier l'annonce" sousTitre="Les mêmes vérifications qu'à la publication s'appliquent." />
+      <FormulaireAnnonce
           action={modifierAnnonce.bind(null, id)}
           avecAssistant={false}
           libelleBouton="Enregistrer les modifications"
@@ -41,7 +42,6 @@ export default async function PageModifierAnnonce({ params }: { params: Promise<
             lieu: annonce.lieu ?? "",
           }}
         />
-      </Carte>
     </main>
   );
 }

@@ -36,6 +36,6 @@ export async function repondreDemande(formData: FormData) {
 
   await supabase.from("demandes_contact").update({ statut: reponse }).eq("id", demandeId);
 
-  revalidatePath("/demandes");
+  revalidatePath("/", "layout"); // tableau de bord et pastille du menu
   revalidatePath("/annonces");
 }
