@@ -4,6 +4,7 @@ import { repondreDemande } from "./demandes/actions";
 import { Icone, type NomIcone } from "./icone";
 import { Avatar, PastilleCategorie, VignetteCategorie } from "./ui";
 import type { CategorieAnnonce } from "@/lib/annonces/valider";
+import { meilleuresCorrespondances } from "@/lib/annonces/correspondance";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -81,9 +82,16 @@ const formatJour = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "num
 async function TableauDeBord({ userId }: { userId: string }) {
   const supabase = await createClient();
 
-  const [{ data: profil }, { data: mesAnnonces }, { data: recues }, { data: acceptees }, { data: recentes }] =
+  const [
+    { data: profil },
+    { data: mesAnnonces },
+    { data: recues },
+    { data: acceptees },
+    { data: recentes },
+    { data: recherches },
+  ] =
     await Promise.all([
-      supabase.from("profils").select("prenom").eq("id", userId).maybeSingle(),
+      supabase.from("profils").select("prenom, competences").eq("id", userId).maybeSingle(),
       supabase.from("annonces").select("statut").eq("auteur_id", userId),
       supabase
         .from("demandes_contact")
@@ -103,7 +111,24 @@ async function TableauDeBord({ userId }: { userId: string }) {
         .neq("auteur_id", userId)
         .order("created_at", { ascending: false })
         .limit(4),
+      // Les « Je cherche » des autres, à comparer avec mes compétences (palier 3).
+      supabase
+        .from("annonces")
+        .select("id, titre, description, categorie, type, statut, auteur_id, prix, lieu")
+        .eq("type", "cherche")
+        .eq("statut", "active")
+        .neq("auteur_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(100),
     ]);
+
+  const mesCompetences = ((profil?.competences as string[] | undefined) ?? []);
+  const suggestions = meilleuresCorrespondances(
+    mesCompetences,
+    (recherches ?? []) as (AnnonceRecente & { description: string; statut: string; auteur_id: string })[],
+    userId,
+    3,
+  );
 
   const demandes = (recues ?? []) as unknown as DemandeRecue[];
   const conversations = acceptees ?? [];
@@ -249,6 +274,48 @@ async function TableauDeBord({ userId }: { userId: string }) {
             <span className="flex-1 font-semibold">Décris ton annonce en quelques mots, l&apos;assistant la rédige pour toi</span>
             <Icone nom="fleche" taille={20} />
           </Link>
+
+          <section className="carte p-5">
+            <h2 className="flex items-center gap-2 text-lg font-extrabold">
+              <span className="degrade flex h-8 w-8 items-center justify-center rounded-xl text-white">
+                <Icone nom="etincelles" taille={17} />
+              </span>
+              Tu peux aider
+            </h2>
+            <p className="mt-1 mb-4 text-sm text-gris">Les demandes qui correspondent à tes compétences.</p>
+            {mesCompetences.length === 0 ? (
+              <Link href="/profil" className="flex items-center gap-3 rounded-2xl bg-violet/10 p-4 text-sm font-semibold text-[#4c1d95]">
+                <Icone nom="televerser" taille={20} className="shrink-0" />
+                <span className="flex-1">Dépose ton CV dans ton profil : l&apos;IA trouve tes compétences, et on te montre où tu peux aider.</span>
+                <Icone nom="fleche" taille={18} />
+              </Link>
+            ) : suggestions.length === 0 ? (
+              <p className="rounded-2xl bg-gray-50 p-4 text-sm text-gray-600">
+                Aucune demande ne correspond à tes compétences pour l&apos;instant. On te préviendra ici dès qu&apos;il y en a une.
+              </p>
+            ) : (
+              <ul className="flex flex-col gap-3">
+                {suggestions.map(({ annonce: a, competences }) => (
+                  <li key={a.id}>
+                    <Link href={`/annonces/${a.id}`} className="flex items-center gap-3 rounded-2xl border border-ligne p-3 transition hover:border-violet/40 hover:bg-violet/5">
+                      <VignetteCategorie categorie={a.categorie} taille={44} />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-bold">{a.titre}</span>
+                        <span className="mt-1 flex flex-wrap gap-1">
+                          {competences.slice(0, 2).map((c) => (
+                            <span key={c} className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-800">
+                              {c}
+                            </span>
+                          ))}
+                        </span>
+                      </span>
+                      <Icone nom="fleche" taille={18} className="shrink-0 text-gris" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
 
           <section>
             <div className="mb-3 flex items-center justify-between">

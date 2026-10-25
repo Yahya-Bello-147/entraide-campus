@@ -72,10 +72,14 @@ export default async function PageAnnonces({
   // Prénom des auteurs + mes demandes déjà envoyées (pour afficher leur statut sur la carte).
   const auteurs = [...new Set(annonces.map((a) => a.auteur_id))];
   const [{ data: profils }, { data: mesDemandes }] = await Promise.all([
-    supabase.from("profils").select("id, prenom").in("id", auteurs),
+    supabase.from("profils").select("id, prenom, competences").in("id", auteurs),
     supabase.from("demandes_contact").select("annonce_id, statut").eq("demandeur_id", user.id),
   ]);
   const prenom = new Map((profils ?? []).map((p) => [p.id as string, p.prenom as string]));
+  // Les 2 premières compétences validées de l'auteur (profil IA), affichées sur la carte.
+  const competences = new Map(
+    (profils ?? []).map((p) => [p.id as string, ((p.competences as string[] | null) ?? []).slice(0, 2)]),
+  );
   const statutDemande = new Map(
     (mesDemandes ?? []).map((d) => [d.annonce_id as string, d.statut as keyof typeof STATUT_DEMANDE]),
   );
@@ -230,7 +234,12 @@ export default async function PageAnnonces({
               <div className="relative z-10 mt-4 flex items-center justify-between gap-3 border-t border-ligne pt-3">
                 <span className="flex min-w-0 items-center gap-2 text-sm text-gray-600">
                   <Avatar prenom={prenom.get(annonce.auteur_id)} taille={26} />
-                  <span className="truncate">{prenom.get(annonce.auteur_id) ?? "Un étudiant"}</span>
+                  <span className="min-w-0 truncate">
+                    <span className="font-semibold text-encre">{prenom.get(annonce.auteur_id) ?? "Un étudiant"}</span>
+                    {(competences.get(annonce.auteur_id) ?? []).length > 0 && (
+                      <span className="text-gris"> · {(competences.get(annonce.auteur_id) ?? []).join(", ")}</span>
+                    )}
+                  </span>
                 </span>
                 {estMoi ? (
                   <Link href={`/annonces/${annonce.id}`} className="text-sm font-bold text-indigo">
