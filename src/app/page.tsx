@@ -25,10 +25,7 @@ const ETAPES: { icone: NomIcone; titre: string; texte: string; couleur: string }
 function Accueil() {
   return (
     <main className="flex flex-1 flex-col">
-      <section className="relative overflow-hidden bg-[#1e1b4b] text-white">
-        <div className="halo -top-24 -left-20 h-80 w-80 bg-violet opacity-80" />
-        <div className="halo top-24 -right-24 h-72 w-72 bg-bleu opacity-70" />
-        <div className="halo -bottom-24 left-1/3 h-56 w-56 bg-rose opacity-50" />
+      <section className="relative overflow-hidden bg-violet text-white">
         <div className="relative mx-auto flex max-w-6xl flex-col gap-6 px-4 py-16 sm:px-6 sm:py-24">
           <span className="self-start rounded-full border border-white/30 bg-white/15 px-3 py-1.5 text-xs font-semibold">
             Réservé aux étudiants ESD et ESP
@@ -38,7 +35,7 @@ function Accueil() {
             Propose ce que tu sais faire, trouve ce dont tu as besoin : photo, dev, coloc, covoiturage, objets…
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link href="/inscription" className="bouton bg-white text-[#312e81] hover:bg-white/90">
+            <Link href="/inscription" className="bouton bg-white text-violet hover:bg-white/90">
               Créer mon compte
             </Link>
             <Link href="/connexion" className="bouton border border-white/40 bg-white/15 text-white hover:bg-white/25">
@@ -164,10 +161,7 @@ async function TableauDeBord({ userId }: { userId: string }) {
 
   return (
     <main className="flex flex-1 flex-col">
-      <section className="relative overflow-hidden bg-[#312e81] text-white md:rounded-b-[2.5rem]">
-        <div className="halo -top-28 -left-16 h-80 w-80 bg-violet opacity-80" />
-        <div className="halo -top-10 -right-28 h-72 w-72 bg-bleu opacity-75" />
-        <div className="halo -bottom-24 left-1/3 h-48 w-48 bg-rose opacity-50" />
+      <section className="relative overflow-hidden bg-violet text-white md:rounded-b-[2.5rem]">
         <div className="relative mx-auto max-w-6xl px-4 pt-6 pb-8 sm:px-6 sm:pt-10">
           <p className="text-sm text-white/75 first-letter:uppercase">{formatJour.format(new Date())}</p>
           <h1 className="titre mt-1 text-3xl sm:text-4xl">Bonjour {prenom ?? "et bienvenue"}</h1>
@@ -266,7 +260,7 @@ async function TableauDeBord({ userId }: { userId: string }) {
         <div className="flex min-w-0 flex-col gap-6">
           <Link
             href="/annonces/nouvelle"
-            className="carte-survol flex items-center gap-4 rounded-[20px] bg-violet/10 p-5 text-[#4c1d95]"
+            className="carte-survol flex items-center gap-4 rounded-[20px] bg-violet/10 p-5 text-violet"
           >
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-violet">
               <Icone nom="etincelles" taille={22} />
@@ -284,7 +278,7 @@ async function TableauDeBord({ userId }: { userId: string }) {
             </h2>
             <p className="mt-1 mb-4 text-sm text-gris">Les demandes qui correspondent à tes compétences.</p>
             {mesCompetences.length === 0 ? (
-              <Link href="/profil" className="flex items-center gap-3 rounded-2xl bg-violet/10 p-4 text-sm font-semibold text-[#4c1d95]">
+              <Link href="/profil" className="flex items-center gap-3 rounded-2xl bg-violet/10 p-4 text-sm font-semibold text-violet">
                 <Icone nom="televerser" taille={20} className="shrink-0" />
                 <span className="flex-1">Dépose ton CV dans ton profil : l&apos;IA trouve tes compétences, et on te montre où tu peux aider.</span>
                 <Icone nom="fleche" taille={18} />

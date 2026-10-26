@@ -31,8 +31,9 @@
 - On ajoute à l'existant, on ne refait pas ce qui marche.
 
 ## Design (refonte du 23 oct, validée sur maquette)
-- Fond clair `#f6f7fb`, cartes blanches qui flottent (classe `carte`), dégradé violet → bleu pour l'essentiel
-  (classes `degrade`, `bouton-principal`), formes floues `halo` derrière les en-têtes.
+- Fond gris chaud `#f3f0eb`, cartes blanches qui flottent (classe `carte`), **bleu marine `#1f3a5f`** uni pour
+  l'essentiel (classes `degrade`, `bouton-principal`, couleur `violet` = le bleu marine), en-têtes bleu marine unis.
+  Pas de rose corail (choix du 26 oct).
 - Police Plus Jakarta Sans partout (plus de police à empattements). Une couleur + une icône par catégorie
   (`src/lib/annonces/style-categories.ts`). Icônes maison au trait (`src/app/icone.tsx`), pas d'emoji.
 - Navigation : barre du haut sur ordinateur (≥ 1024 px), barre d'onglets en bas sur téléphone et tablette.

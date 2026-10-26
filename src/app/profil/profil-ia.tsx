@@ -65,7 +65,7 @@ function Relecture({ initiales, vientDeLIA }: { initiales: string[]; vientDeLIA:
       <ul className="flex flex-wrap gap-2">
         {liste.length === 0 && <li className="text-sm text-gris">Aucune compétence pour l&apos;instant.</li>}
         {liste.map((c) => (
-          <li key={c} className="flex items-center gap-1 rounded-full bg-violet/10 py-1 pr-1 pl-3 text-sm font-semibold text-[#4c1d95]">
+          <li key={c} className="flex items-center gap-1 rounded-full bg-violet/10 py-1 pr-1 pl-3 text-sm font-semibold text-violet">
             <input type="hidden" name="competence" value={c} />
             {c}
             <button

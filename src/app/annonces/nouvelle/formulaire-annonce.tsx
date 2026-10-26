@@ -48,7 +48,7 @@ export function FormulaireAnnonce({
     <div className="flex flex-col gap-5">
       {avecAssistant && (
         <form action={proposerAction} className="flex flex-col gap-3 rounded-[20px] bg-violet/10 p-5">
-          <label className="flex flex-col gap-2 text-sm font-bold text-[#4c1d95]">
+          <label className="flex flex-col gap-2 text-sm font-bold text-violet">
             <span className="flex items-center gap-2">
               <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-violet">
                 <Icone nom="etincelles" taille={18} />

@@ -105,7 +105,7 @@ export function Navigation({ demandesEnAttente, prenom }: { demandesEnAttente: n
         <Link
           href="/annonces/nouvelle"
           aria-label="Publier une annonce"
-          className="degrade -mt-8 flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-[0_10px_24px_rgb(79_70_229/0.4)]"
+          className="degrade -mt-8 flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-[0_10px_24px_rgb(31_58_95/0.4)]"
         >
           <Icone nom="plus" taille={26} epaisseur={2.5} />
         </Link>
