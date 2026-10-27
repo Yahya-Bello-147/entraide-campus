@@ -161,7 +161,7 @@ async function TableauDeBord({ userId }: { userId: string }) {
 
   return (
     <main className="flex flex-1 flex-col">
-      <section className="relative overflow-hidden bg-violet text-white md:rounded-b-[2.5rem]">
+      <section className="relative overflow-hidden bg-violet text-white md:rounded-b-[2.5rem] lg:m-5 lg:rounded-[2rem]">
         <div className="relative mx-auto max-w-6xl px-4 pt-6 pb-8 sm:px-6 sm:pt-10">
           <p className="text-sm text-white/75 first-letter:uppercase">{formatJour.format(new Date())}</p>
           <h1 className="titre mt-1 text-3xl sm:text-4xl">Bonjour {prenom ?? "et bienvenue"}</h1>

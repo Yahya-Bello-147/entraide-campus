@@ -26,7 +26,7 @@ export default async function PageProfil({
 
   return (
     <main className="flex flex-1 flex-col">
-      <section className="relative overflow-hidden bg-violet text-white md:rounded-b-[2.5rem]">
+      <section className="relative overflow-hidden bg-violet text-white md:rounded-b-[2.5rem] lg:m-5 lg:rounded-[2rem]">
         <div className="relative mx-auto flex max-w-5xl items-center gap-4 px-4 py-8 sm:px-6">
           <span className="rounded-full border-2 border-white/40 p-1">
             <Avatar prenom={prenom} taille={64} />
