@@ -57,7 +57,7 @@ export function FormulaireAnnonce({
             </span>
             <input name="mots" maxLength={300} placeholder="vends macbook m3 pro 2000€ bordeaux" className="champ font-normal" />
           </label>
-          <button type="submit" disabled={redactionEnCours} className="bouton self-start bg-gray-900 text-white hover:bg-gray-700">
+          <button type="submit" disabled={redactionEnCours} className="bouton self-start bg-indigo text-white hover:brightness-110">
             <Icone nom="etincelles" taille={17} />
             {redactionEnCours ? "L'assistant rédige…" : "Rédiger avec l'assistant"}
           </button>

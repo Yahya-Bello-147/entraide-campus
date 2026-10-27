@@ -42,7 +42,7 @@ export function FormulaireMessage({ demandeId }: { demandeId: string }) {
           type="submit"
           disabled={enCours}
           aria-label="Envoyer le message"
-          className="degrade flex h-12 w-12 shrink-0 items-center justify-center self-end rounded-full text-white shadow-[0_6px_16px_rgb(31_58_95/0.35)] transition hover:brightness-110 disabled:opacity-50"
+          className="degrade flex h-12 w-12 shrink-0 items-center justify-center self-end rounded-full text-white shadow-[0_6px_16px_rgb(142_102_184/0.35)] transition hover:brightness-110 disabled:opacity-50"
         >
           <Icone nom="envoyer" taille={20} />
         </button>

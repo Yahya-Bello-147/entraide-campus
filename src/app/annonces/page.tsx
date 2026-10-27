@@ -225,7 +225,7 @@ export default async function PageAnnonces({
                 <PastilleCategorie categorie={annonce.categorie} />
                 {estMoi && <span className="rounded-full bg-violet/10 px-2.5 py-1 text-xs font-bold text-violet">Mon annonce</span>}
                 {annonce.statut === "pourvue" && (
-                  <span className="rounded-full bg-gray-900 px-2.5 py-1 text-xs font-bold text-white">
+                  <span className="rounded-full bg-indigo px-2.5 py-1 text-xs font-bold text-white">
                     {annonce.categorie === "objets" ? "Vendue" : "Pourvue"}
                   </span>
                 )}
@@ -252,7 +252,7 @@ export default async function PageAnnonces({
                 ) : (
                   <form action={demanderContact}>
                     <input type="hidden" name="annonceId" value={annonce.id} />
-                    <button type="submit" className="rounded-full bg-gray-900 px-3.5 py-2 text-xs font-bold text-white hover:bg-gray-700">
+                    <button type="submit" className="rounded-full bg-rose px-3.5 py-2 text-xs font-bold text-white hover:brightness-110">
                       Demander le contact
                     </button>
                   </form>
@@ -272,7 +272,7 @@ function Pastille({ href, actif, children }: { href: string; actif: boolean; chi
       href={href}
       aria-current={actif ? "page" : undefined}
       className={`rounded-full px-3.5 py-2 text-sm font-bold transition ${
-        actif ? "bg-gray-900 text-white" : "bg-white text-gray-700 shadow-sm hover:bg-gray-50"
+        actif ? "bg-indigo text-white" : "bg-white text-gray-700 shadow-sm hover:bg-gray-50"
       }`}
     >
       {children}

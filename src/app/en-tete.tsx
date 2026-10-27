@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Logo } from "./logo";
 import { Navigation } from "./navigation";
 
-// Barre du haut. Connecté : la navigation (en haut sur ordinateur, en bas sur téléphone).
+// Barre du haut. Connecté : la navigation (menu à gauche sur ordinateur, en bas sur téléphone).
 export async function EnTete() {
   const supabase = await createClient();
   const {
@@ -12,8 +12,9 @@ export async function EnTete() {
 
   if (!user) {
     return (
-      <header className="sticky top-0 z-30 border-b border-ligne/60 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+      // Transparente et haute de 4,5 rem : sur l'accueil, la vague violette passe derrière.
+      <header className="relative z-30 h-18">
+        <div className="mx-auto flex h-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
           <Logo />
           <nav className="flex gap-2">
             <Link href="/connexion" className="bouton bouton-contour">

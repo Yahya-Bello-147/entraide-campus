@@ -65,7 +65,7 @@ export function TitrePage({
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0">
-        <h1 className="titre text-3xl sm:text-4xl">{titre}</h1>
+        <h1 className="titre text-3xl text-indigo sm:text-4xl">{titre}</h1>
         {sousTitre && <p className="mt-1 text-gris">{sousTitre}</p>}
       </div>
       {actions}

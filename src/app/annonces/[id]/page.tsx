@@ -55,7 +55,7 @@ export default async function PageAnnonce({ params }: { params: Promise<{ id: st
             <PastilleCategorie categorie={annonce.categorie as CategorieAnnonce} />
             <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-700">{TYPES[annonce.type as TypeAnnonce]}</span>
             {pourvue && (
-              <span className="rounded-full bg-gray-900 px-2.5 py-1 text-xs font-bold text-white">
+              <span className="rounded-full bg-indigo px-2.5 py-1 text-xs font-bold text-white">
                 {libellePourvue[0].toUpperCase() + libellePourvue.slice(1)}
               </span>
             )}

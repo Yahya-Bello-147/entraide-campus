@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
-/* CampusLink — fond gris chaud, cartes blanches qui flottent, bleu marine pour l'essentiel. */
+/* CampusLink — style « vagues » (27 oct) : fond pêche, violet, boutons roses, petits dessins. */
 :root {
-  --fond: #f3f0eb;
-  --encre: #111827;
-  --gris: #6b7280;
-  --ligne: #e5e7eb;
-  --violet: #1f3a5f; /* bleu marine principal (nom gardé pour ne rien casser) */
-  --indigo: #1f3a5f;
-  --bleu: #2b4c7a; /* bleu marine un peu plus clair */
-  --rose: #ec4899;
-  --or: #f5b83d; /* jaune doré du bouton « Publier » dans la barre de gauche */
+  --fond: #fdeee6; /* pêche clair */
+  --encre: #2d2838;
+  --gris: #6b6577;
+  --ligne: #eadfe6;
+  --violet: #8e66b8; /* couleur principale : menu, bandeaux, vagues */
+  --indigo: #4f5fb0; /* titres et liens */
+  --bleu: #7b55a6; /* violet plus foncé : vagues du dessous */
+  --rose: #ef476f; /* boutons d'action */
+  --or: #ffd166; /* jaune des étoiles et des pastilles */
   --erreur: #dc2626;
   --succes: #059669;
 }
@@ -54,7 +54,7 @@ body {
   .carte {
     background: #ffffff;
     border-radius: 20px;
-    box-shadow: 0 8px 24px rgb(17 24 39 / 0.07);
+    box-shadow: 0 8px 24px rgb(142 102 184 / 0.1);
   }
 
   .carte-survol {
@@ -62,7 +62,7 @@ body {
   }
   .carte-survol:hover {
     transform: translateY(-2px);
-    box-shadow: 0 14px 32px rgb(17 24 39 / 0.11);
+    box-shadow: 0 14px 32px rgb(142 102 184 / 0.18);
   }
 
   .bouton {
@@ -72,7 +72,7 @@ body {
     gap: 0.5rem;
     min-height: 44px;
     padding: 0.65rem 1.1rem;
-    border-radius: 14px;
+    border-radius: 9999px;
     font-weight: 700;
     font-size: 0.95rem;
     text-decoration: none;
@@ -88,18 +88,18 @@ body {
   }
   .bouton-principal {
     color: #ffffff;
-    background-color: var(--violet);
-    box-shadow: 0 8px 20px rgb(31 58 95 / 0.3);
+    background-color: var(--rose);
+    box-shadow: 0 8px 20px rgb(239 71 111 / 0.3);
   }
   .bouton-principal:hover {
     filter: brightness(1.08);
   }
   .bouton-secondaire {
-    color: #374151;
-    background: #f3f4f6;
+    color: var(--indigo);
+    background: #f6eef8;
   }
   .bouton-secondaire:hover {
-    background: #e5e7eb;
+    background: #eddff3;
   }
   .bouton-contour {
     color: var(--encre);
@@ -107,8 +107,8 @@ body {
     border: 1.5px solid var(--ligne);
   }
   .bouton-contour:hover {
-    border-color: #b9c6d8;
-    background: #eef2f7;
+    border-color: #d6c2e6;
+    background: #faf5fc;
   }
   .bouton-danger {
     color: #ffffff;
@@ -133,7 +133,7 @@ body {
   .champ:focus {
     outline: none;
     border-color: var(--indigo);
-    box-shadow: 0 0 0 4px rgb(31 58 95 / 0.15);
+    box-shadow: 0 0 0 4px rgb(142 102 184 / 0.18);
   }
 
   .etiquette {
@@ -171,7 +171,7 @@ body {
   }
 
   :focus-visible {
-    outline: 3px solid rgb(31 58 95 / 0.5);
+    outline: 3px solid rgb(142 102 184 / 0.55);
     outline-offset: 2px;
   }
 }

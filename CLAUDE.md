@@ -30,14 +30,17 @@
   3. La messagerie : Léa et Sam s'écrivent (palier 2, règle d'or n°3).
 - On ajoute à l'existant, on ne refait pas ce qui marche.
 
-## Design (refonte du 23 oct, validée sur maquette)
-- Fond gris chaud `#f3f0eb`, cartes blanches qui flottent (classe `carte`), **bleu marine `#1f3a5f`** uni pour
-  l'essentiel (classes `degrade`, `bouton-principal`, couleur `violet` = le bleu marine), en-têtes bleu marine unis.
-  Pas de rose corail (choix du 26 oct).
-- Police Plus Jakarta Sans partout (plus de police à empattements). Une couleur + une icône par catégorie
+## Design (style « vagues » du 27 oct, validé sur maquette ; remplace le bleu marine)
+- Fond pêche `#fdeee6`, cartes blanches qui flottent (classe `carte`), **violet `#8e66b8`** pour le menu et les bandeaux
+  (couleur `violet`, classe `degrade`), **boutons roses `#ef476f`** en pilule (`bouton-principal`, couleur `rose`),
+  titres et liens **indigo `#4f5fb0`**, jaune `or` `#ffd166` pour les étoiles et pastilles.
+- Vagues, petits dessins (étoiles, ronds, zigzags) et illustrations plates **dessinées dans le code**
+  (`src/app/illustrations.tsx`), aucune image téléchargée. Illustrations de l'accueil et du bandeau du tableau de bord.
+- Police Plus Jakarta Sans partout. Une couleur + une icône par catégorie
   (`src/lib/annonces/style-categories.ts`). Icônes maison au trait (`src/app/icone.tsx`), pas d'emoji.
-- Navigation : connecté, barre verticale bleu marine à gauche sur ordinateur (≥ 1024 px, bouton « Publier » jaune doré
-  `or`) ; barre d'onglets en bas sur téléphone et tablette (inchangée). Choix du 27 oct, validé sur maquette.
+- Navigation : connecté, barre verticale violette à gauche sur ordinateur (≥ 1024 px, bouton « Publier » rose) ;
+  barre d'onglets en bas sur téléphone et tablette. Pas connecté : barre du haut transparente (la vague passe derrière).
+- Refusés : bleu marine (remplacé), illustrations 3D / emojis.
 - Composants communs : `src/app/ui.tsx` (Avatar, PastilleCategorie, VignetteCategorie, TitrePage, EtatVide).
 
 ## Outils

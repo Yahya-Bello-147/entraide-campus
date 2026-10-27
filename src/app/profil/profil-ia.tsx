@@ -113,7 +113,7 @@ function Relecture({ initiales, vientDeLIA }: { initiales: string[]; vientDeLIA:
         </p>
       )}
 
-      <button type="submit" disabled={enCours} className="bouton bg-gray-900 text-white hover:bg-gray-700">
+      <button type="submit" disabled={enCours} className="bouton bg-indigo text-white hover:brightness-110">
         {enCours ? "Enregistrement…" : "Valider mes compétences"}
       </button>
     </form>

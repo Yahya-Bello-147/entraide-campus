@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { deconnexion } from "@/app/auth/actions";
 import { Icone, type NomIcone } from "./icone";
+import { DecorMenu } from "./illustrations";
 import { Logo } from "./logo";
 import { Avatar } from "./ui";
 
@@ -23,7 +24,7 @@ function Pastille({ nombre }: { nombre?: number }) {
   );
 }
 
-// Menu des personnes connectées : barre bleue verticale à gauche sur ordinateur,
+// Menu des personnes connectées : barre violette verticale à gauche sur ordinateur,
 // petite barre en haut + barre d'onglets en bas sur téléphone et tablette.
 export function Navigation({ demandesEnAttente, prenom }: { demandesEnAttente: number; prenom: string | null }) {
   const chemin = usePathname();
@@ -38,20 +39,21 @@ export function Navigation({ demandesEnAttente, prenom }: { demandesEnAttente: n
   return (
     <>
       {/* Ordinateur : la classe barre-gauche décale la page vers la droite (voir layout.tsx). */}
-      <aside className="barre-gauche fixed inset-y-0 left-0 z-30 hidden w-64 flex-col bg-violet px-4 py-6 text-white lg:flex">
-        <div className="px-2 pb-7">
+      <aside className="barre-gauche fixed inset-y-0 left-0 z-30 hidden w-64 flex-col overflow-hidden bg-violet px-4 py-6 text-white lg:flex">
+        <DecorMenu />
+        <div className="relative px-2 pb-7">
           <Logo clair />
         </div>
 
         <Link
           href="/annonces/nouvelle"
-          className="mb-5 flex items-center justify-center gap-2 rounded-2xl bg-or px-4 py-3 font-extrabold text-encre shadow-[0_8px_18px_rgb(0_0_0/0.2)] transition hover:brightness-105 active:scale-[0.98]"
+          className="relative mb-5 flex items-center justify-center gap-2 rounded-full bg-rose px-4 py-3 font-extrabold text-white shadow-[0_8px_18px_rgb(0_0_0/0.18)] transition hover:brightness-105 active:scale-[0.98]"
         >
           <Icone nom="plus" taille={18} epaisseur={2.5} />
           Publier une annonce
         </Link>
 
-        <nav aria-label="Menu principal" className="flex flex-col gap-1">
+        <nav aria-label="Menu principal" className="relative flex flex-col gap-1">
           {liens.map((l) => {
             const actif = estActif(chemin, l.href);
             return (
@@ -60,13 +62,13 @@ export function Navigation({ demandesEnAttente, prenom }: { demandesEnAttente: n
                 href={l.href}
                 aria-current={actif ? "page" : undefined}
                 className={`flex items-center gap-3 rounded-2xl px-4 py-3 font-semibold transition-colors ${
-                  actif ? "bg-white/15 text-white" : "text-white/70 hover:bg-white/10 hover:text-white"
+                  actif ? "bg-white/20 text-white" : "text-white/80 hover:bg-white/10 hover:text-white"
                 }`}
               >
                 <Icone nom={l.icone} taille={20} />
                 {l.libelle}
                 {l.pastille ? (
-                  <span className="ml-auto flex h-5.5 min-w-5.5 items-center justify-center rounded-full bg-erreur px-1.5 text-xs font-extrabold text-white">
+                  <span className="ml-auto flex h-5.5 min-w-5.5 items-center justify-center rounded-full bg-or px-1.5 text-xs font-extrabold text-encre">
                     {l.pastille > 9 ? "9+" : l.pastille}
                   </span>
                 ) : null}
@@ -75,7 +77,7 @@ export function Navigation({ demandesEnAttente, prenom }: { demandesEnAttente: n
           })}
         </nav>
 
-        <div className="mt-auto flex flex-col gap-3 border-t border-white/15 pt-4">
+        <div className="relative mt-auto flex flex-col gap-3 border-t border-white/20 pt-4">
           <Link
             href="/profil"
             aria-current={profilActif ? "page" : undefined}
@@ -136,7 +138,7 @@ export function Navigation({ demandesEnAttente, prenom }: { demandesEnAttente: n
         <Link
           href="/annonces/nouvelle"
           aria-label="Publier une annonce"
-          className="degrade -mt-8 flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-[0_10px_24px_rgb(31_58_95/0.4)]"
+          className="-mt-8 flex h-14 w-14 items-center justify-center rounded-full bg-rose text-white shadow-[0_10px_24px_rgb(239_71_111/0.4)]"
         >
           <Icone nom="plus" taille={26} epaisseur={2.5} />
         </Link>

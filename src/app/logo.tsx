@@ -12,7 +12,7 @@ export function Logo({ clair = false }: { clair?: boolean }) {
       >
         <Icone nom="lien" taille={19} epaisseur={2.3} />
       </span>
-      <span className={`text-xl font-extrabold tracking-tight ${clair ? "text-white" : "text-encre"}`}>
+      <span className={`text-xl font-extrabold tracking-tight ${clair ? "text-white" : "text-indigo"}`}>
         CampusLink
       </span>
     </Link>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { repondreDemande } from "./demandes/actions";
 import { Icone, type NomIcone } from "./icone";
+import { DecorBandeau, IllustrationAccueil, VaguesAccueil } from "./illustrations";
 import { Avatar, PastilleCategorie, VignetteCategorie } from "./ui";
 import type { CategorieAnnonce } from "@/lib/annonces/valider";
 import { meilleuresCorrespondances } from "@/lib/annonces/correspondance";
@@ -25,28 +26,42 @@ const ETAPES: { icone: NomIcone; titre: string; texte: string; couleur: string }
 function Accueil() {
   return (
     <main className="flex flex-1 flex-col">
-      <section className="relative overflow-hidden bg-violet text-white">
-        <div className="relative mx-auto flex max-w-6xl flex-col gap-6 px-4 py-16 sm:px-6 sm:py-24">
-          <span className="self-start rounded-full border border-white/30 bg-white/15 px-3 py-1.5 text-xs font-semibold">
-            Réservé aux étudiants ESD et ESP
-          </span>
-          <h1 className="titre max-w-2xl text-4xl sm:text-6xl">Le campus qui se donne un coup de main.</h1>
-          <p className="max-w-xl text-lg text-white/85">
-            Propose ce que tu sais faire, trouve ce dont tu as besoin : photo, dev, coloc, covoiturage, objets…
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/inscription" className="bouton bg-white text-violet hover:bg-white/90">
-              Créer mon compte
-            </Link>
-            <Link href="/connexion" className="bouton border border-white/40 bg-white/15 text-white hover:bg-white/25">
-              Se connecter
-            </Link>
+      {/* Remonte sous la barre du haut (transparente) pour que la vague passe derrière le menu. */}
+      <section className="relative -mt-18 overflow-hidden pt-18">
+        <VaguesAccueil />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-4 pt-10 pb-24 sm:px-6 lg:grid-cols-[1fr_1.1fr] lg:pt-16 lg:pb-32">
+          <div className="flex flex-col gap-6">
+            <div className="relative self-start">
+              <h1 className="titre text-5xl leading-[0.95] text-indigo uppercase sm:text-7xl">
+                Le campus
+                <br />
+                qui s&apos;aide
+              </h1>
+              <span className="absolute -top-12 -right-6 hidden h-16 w-16 items-center justify-center rounded-full bg-white text-center text-xs leading-tight font-extrabold text-indigo shadow-md sm:-top-14 sm:-right-16 sm:flex sm:h-[74px] sm:w-[74px] sm:text-sm">
+                entre
+                <br />
+                étudiants
+              </span>
+            </div>
+            <p className="max-w-md text-lg leading-relaxed text-gray-700">
+              Propose ce que tu sais faire, trouve ce dont tu as besoin : photo, vidéo, dev, coloc, covoiturage… Réservé
+              aux étudiants ESD et ESP.
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <Link href="/inscription" className="bouton bouton-principal px-7">
+                Créer mon compte
+              </Link>
+              <Link href="/connexion" className="bouton font-bold text-indigo hover:bg-white/60">
+                Se connecter →
+              </Link>
+            </div>
           </div>
+          <IllustrationAccueil className="mx-auto w-full max-w-md lg:max-w-none" />
         </div>
       </section>
 
       <section className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
-        <p className="mb-4 text-sm font-bold tracking-wider text-violet uppercase">Comment ça marche</p>
+        <p className="mb-4 text-sm font-bold tracking-wider text-indigo uppercase">Comment ça marche</p>
         <div className="grid gap-4 sm:grid-cols-3">
           {ETAPES.map((e) => (
             <div key={e.titre} className="carte flex items-center gap-4 p-5 sm:flex-col sm:items-start">
@@ -162,9 +177,10 @@ async function TableauDeBord({ userId }: { userId: string }) {
   return (
     <main className="flex flex-1 flex-col">
       <section className="relative overflow-hidden bg-violet text-white md:rounded-b-[2.5rem] lg:m-5 lg:rounded-[2rem]">
-        <div className="relative mx-auto max-w-6xl px-4 pt-6 pb-8 sm:px-6 sm:pt-10">
+        <DecorBandeau avecIllustration />
+        <div className="relative mx-auto max-w-6xl px-4 pt-6 pb-10 sm:px-6 sm:pt-10">
           <p className="text-sm text-white/75 first-letter:uppercase">{formatJour.format(new Date())}</p>
-          <h1 className="titre mt-1 text-3xl sm:text-4xl">Bonjour {prenom ?? "et bienvenue"}</h1>
+          <h1 className="titre mt-1 text-3xl sm:text-4xl">Bonjour {prenom ?? "et bienvenue"} !</h1>
           <div className="mt-6 grid max-w-xl grid-cols-3 gap-3">
             <Chiffre valeur={actives} libelle={actives > 1 ? "annonces actives" : "annonce active"} />
             <Chiffre valeur={pourvues} libelle={pourvues > 1 ? "pourvues ou vendues" : "pourvue ou vendue"} />
@@ -271,7 +287,7 @@ async function TableauDeBord({ userId }: { userId: string }) {
 
           <section className="carte p-5">
             <h2 className="flex items-center gap-2 text-lg font-extrabold">
-              <span className="degrade flex h-8 w-8 items-center justify-center rounded-xl text-white">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-or text-encre">
                 <Icone nom="etincelles" taille={17} />
               </span>
               Tu peux aider
