@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="fr" className={`${jakarta.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-full flex-col lg:has-[.barre-gauche]:pl-64">
         <EnTete />
         {/* Sur téléphone, de la place en bas pour la barre d'onglets. */}
         <div className="flex flex-1 flex-col pb-28 lg:pb-0">{children}</div>

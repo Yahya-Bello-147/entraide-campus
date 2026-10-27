@@ -10,6 +10,7 @@
   --indigo: #1f3a5f;
   --bleu: #2b4c7a; /* bleu marine un peu plus clair */
   --rose: #ec4899;
+  --or: #f5b83d; /* jaune doré du bouton « Publier » dans la barre de gauche */
   --erreur: #dc2626;
   --succes: #059669;
 }
@@ -23,6 +24,7 @@
   --color-indigo: var(--indigo);
   --color-bleu: var(--bleu);
   --color-rose: var(--rose);
+  --color-or: var(--or);
   --color-erreur: var(--erreur);
   --color-succes: var(--succes);
   --font-sans: var(--font-jakarta), system-ui, sans-serif;

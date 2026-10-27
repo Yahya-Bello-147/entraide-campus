@@ -36,7 +36,8 @@
   Pas de rose corail (choix du 26 oct).
 - Police Plus Jakarta Sans partout (plus de police à empattements). Une couleur + une icône par catégorie
   (`src/lib/annonces/style-categories.ts`). Icônes maison au trait (`src/app/icone.tsx`), pas d'emoji.
-- Navigation : barre du haut sur ordinateur (≥ 1024 px), barre d'onglets en bas sur téléphone et tablette.
+- Navigation : connecté, barre verticale bleu marine à gauche sur ordinateur (≥ 1024 px, bouton « Publier » jaune doré
+  `or`) ; barre d'onglets en bas sur téléphone et tablette (inchangée). Choix du 27 oct, validé sur maquette.
 - Composants communs : `src/app/ui.tsx` (Avatar, PastilleCategorie, VignetteCategorie, TitrePage, EtatVide).
 
 ## Outils

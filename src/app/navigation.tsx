@@ -23,7 +23,8 @@ function Pastille({ nombre }: { nombre?: number }) {
   );
 }
 
-// Menu des personnes connectées : barre en haut sur ordinateur, barre d'onglets en bas sur téléphone.
+// Menu des personnes connectées : barre bleue verticale à gauche sur ordinateur,
+// petite barre en haut + barre d'onglets en bas sur téléphone et tablette.
 export function Navigation({ demandesEnAttente, prenom }: { demandesEnAttente: number; prenom: string | null }) {
   const chemin = usePathname();
   const liens: Lien[] = [
@@ -32,44 +33,84 @@ export function Navigation({ demandesEnAttente, prenom }: { demandesEnAttente: n
     { href: "/demandes", libelle: "Demandes", icone: "boite", pastille: demandesEnAttente },
     { href: "/messages", libelle: "Messages", icone: "message" },
   ];
+  const profilActif = estActif(chemin, "/profil");
 
   return (
     <>
-      <header className="sticky top-0 z-30 border-b border-ligne/60 bg-white/80 backdrop-blur-md">
+      {/* Ordinateur : la classe barre-gauche décale la page vers la droite (voir layout.tsx). */}
+      <aside className="barre-gauche fixed inset-y-0 left-0 z-30 hidden w-64 flex-col bg-violet px-4 py-6 text-white lg:flex">
+        <div className="px-2 pb-7">
+          <Logo clair />
+        </div>
+
+        <Link
+          href="/annonces/nouvelle"
+          className="mb-5 flex items-center justify-center gap-2 rounded-2xl bg-or px-4 py-3 font-extrabold text-encre shadow-[0_8px_18px_rgb(0_0_0/0.2)] transition hover:brightness-105 active:scale-[0.98]"
+        >
+          <Icone nom="plus" taille={18} epaisseur={2.5} />
+          Publier une annonce
+        </Link>
+
+        <nav aria-label="Menu principal" className="flex flex-col gap-1">
+          {liens.map((l) => {
+            const actif = estActif(chemin, l.href);
+            return (
+              <Link
+                key={l.href}
+                href={l.href}
+                aria-current={actif ? "page" : undefined}
+                className={`flex items-center gap-3 rounded-2xl px-4 py-3 font-semibold transition-colors ${
+                  actif ? "bg-white/15 text-white" : "text-white/70 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                <Icone nom={l.icone} taille={20} />
+                {l.libelle}
+                {l.pastille ? (
+                  <span className="ml-auto flex h-5.5 min-w-5.5 items-center justify-center rounded-full bg-erreur px-1.5 text-xs font-extrabold text-white">
+                    {l.pastille > 9 ? "9+" : l.pastille}
+                  </span>
+                ) : null}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="mt-auto flex flex-col gap-3 border-t border-white/15 pt-4">
+          <Link
+            href="/profil"
+            aria-current={profilActif ? "page" : undefined}
+            className={`flex items-center gap-3 rounded-2xl px-2.5 py-2 transition-colors ${
+              profilActif ? "bg-white/15" : "hover:bg-white/10"
+            }`}
+          >
+            <span className="rounded-full bg-white p-0.5">
+              <Avatar prenom={prenom} taille={36} />
+            </span>
+            <span className="flex min-w-0 flex-col leading-tight">
+              <span className="truncate font-bold">{prenom ?? "Mon compte"}</span>
+              <span className="text-xs text-white/65">Mon profil</span>
+            </span>
+          </Link>
+          <form action={deconnexion}>
+            <button
+              type="submit"
+              className="flex w-full items-center justify-center gap-2 rounded-full border-[1.5px] border-white/30 bg-white/10 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-white/20"
+            >
+              <Icone nom="sortie" taille={17} />
+              Se déconnecter
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <header className="sticky top-0 z-30 border-b border-ligne/60 bg-white/80 backdrop-blur-md lg:hidden">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <Logo />
-
-          <nav aria-label="Menu principal" className="hidden items-center gap-1 lg:flex">
-            {liens.map((l) => {
-              const actif = estActif(chemin, l.href);
-              return (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  aria-current={actif ? "page" : undefined}
-                  className={`relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition-colors ${
-                    actif ? "bg-violet/10 text-violet" : "text-gris hover:bg-black/5 hover:text-encre"
-                  }`}
-                >
-                  <span className="relative">
-                    <Icone nom={l.icone} taille={18} />
-                    <Pastille nombre={l.pastille} />
-                  </span>
-                  {l.libelle}
-                </Link>
-              );
-            })}
-          </nav>
-
           <div className="flex items-center gap-2">
-            <Link href="/annonces/nouvelle" className="bouton bouton-principal hidden lg:inline-flex">
-              <Icone nom="plus" taille={18} epaisseur={2.5} />
-              Publier
-            </Link>
             <Link
               href="/demandes"
               aria-label={`Demandes${demandesEnAttente ? ` (${demandesEnAttente} en attente)` : ""}`}
-              className="relative flex h-10 w-10 items-center justify-center rounded-xl text-gris hover:bg-black/5 lg:hidden"
+              className="relative flex h-10 w-10 items-center justify-center rounded-xl text-gris hover:bg-black/5"
             >
               <Icone nom="cloche" taille={21} />
               <Pastille nombre={demandesEnAttente} />
@@ -77,20 +118,10 @@ export function Navigation({ demandesEnAttente, prenom }: { demandesEnAttente: n
             <Link
               href="/profil"
               aria-label="Mon profil"
-              className={`rounded-full p-0.5 ${estActif(chemin, "/profil") ? "ring-2 ring-violet" : ""}`}
+              className={`rounded-full p-0.5 ${profilActif ? "ring-2 ring-violet" : ""}`}
             >
               <Avatar prenom={prenom} taille={36} />
             </Link>
-            <form action={deconnexion} className="hidden lg:block">
-              <button
-                type="submit"
-                aria-label="Se déconnecter"
-                title="Se déconnecter"
-                className="flex h-10 w-10 items-center justify-center rounded-xl text-gris hover:bg-black/5 hover:text-encre"
-              >
-                <Icone nom="sortie" taille={20} />
-              </button>
-            </form>
           </div>
         </div>
       </header>
