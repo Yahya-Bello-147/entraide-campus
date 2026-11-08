@@ -3,6 +3,8 @@
 ## Le projet
 - **Pour qui** : les étudiants de l'ESP (ex-ESD), sur 6 campus : Bordeaux, Nantes, Lyon, Paris, Toulouse, Lille
   (liste dans `src/lib/campus.ts`). Le site doit montrer clairement l'ESP (retour du prof, 6 nov).
+  Chacun choisit son campus dans « Mon profil » (obligatoire pour un profil complet, colonne `profils.campus`
+  limitée aux 6 villes par la base). Tableau de bord : « ESP Lyon » + monument ; annonces filtrées « Mon campus » par défaut.
 - **Problème** : un étudiant ne sait pas qui, sur le campus, peut l'aider (photo, vidéo, dev,
   community management, coloc, covoiturage…), et ses compétences restent invisibles.
 - **Solution** : une appli où chacun propose ce qu'il sait faire et cherche ce dont il a besoin.

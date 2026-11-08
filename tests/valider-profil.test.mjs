@@ -3,12 +3,12 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { validerProfil } from "../src/lib/profil/valider.ts";
 
-const valide = { prenom: "Sam", email: "sam@exemple.fr", telephone: "" };
+const valide = { prenom: "Sam", email: "sam@exemple.fr", telephone: "", campus: "Lyon" };
 
 test("un profil correct est accepté et nettoyé", () => {
-  const r = validerProfil({ prenom: "  Sam ", email: " Sam@Exemple.fr ", telephone: " 06 12 34 56 78 " });
+  const r = validerProfil({ prenom: "  Sam ", email: " Sam@Exemple.fr ", telephone: " 06 12 34 56 78 ", campus: "Lyon" });
   assert.equal(r.ok, true);
-  assert.deepEqual(r.profil, { prenom: "Sam", email: "sam@exemple.fr", telephone: "06 12 34 56 78" });
+  assert.deepEqual(r.profil, { prenom: "Sam", email: "sam@exemple.fr", telephone: "06 12 34 56 78", campus: "Lyon" });
 });
 
 test("le téléphone est facultatif", () => {
@@ -41,4 +41,15 @@ test("un téléphone avec des lettres est refusé", () => {
   const r = validerProfil({ ...valide, telephone: "zéro six douze" });
   assert.equal(r.ok, false);
   assert.match(r.erreur, /téléphone/i);
+});
+
+test("le campus est obligatoire", () => {
+  const r = validerProfil({ ...valide, campus: "" });
+  assert.equal(r.ok, false);
+  assert.match(r.erreur, /campus/);
+});
+
+test("un campus hors des 6 campus ESP est refusé", () => {
+  assert.equal(validerProfil({ ...valide, campus: "Marseille" }).ok, false);
+  assert.equal(validerProfil({ ...valide, campus: "lyon" }).ok, false);
 });

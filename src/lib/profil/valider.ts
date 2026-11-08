@@ -1,8 +1,9 @@
 // Vérifie et nettoie le formulaire « Mon profil ». Mêmes limites que dans la base.
+import { CAMPUS, type Campus } from "../campus.ts";
 
-export type ChampsProfil = Record<"prenom" | "email" | "telephone", string>;
+export type ChampsProfil = Record<"prenom" | "email" | "telephone" | "campus", string>;
 
-export type ProfilValide = { prenom: string; email: string; telephone: string | null };
+export type ProfilValide = { prenom: string; email: string; telephone: string | null; campus: Campus };
 
 export type ResultatProfil = { ok: true; profil: ProfilValide } | { ok: false; erreur: string };
 
@@ -23,6 +24,10 @@ export function validerProfil(champs: ChampsProfil): ResultatProfil {
   if (telephone && !FORMAT_TELEPHONE.test(telephone)) {
     return { ok: false, erreur: "Le téléphone ne doit contenir que des chiffres (ex. 06 12 34 56 78)." };
   }
+  const campus = CAMPUS.find((c) => c === champs.campus);
+  if (!campus) {
+    return { ok: false, erreur: "Choisis ton campus ESP." };
+  }
 
-  return { ok: true, profil: { prenom, email, telephone: telephone || null } };
+  return { ok: true, profil: { prenom, email, telephone: telephone || null, campus } };
 }

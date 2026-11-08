@@ -6,6 +6,7 @@ import { Icone } from "@/app/icone";
 import { Avatar, EtatVide, PastilleCategorie, TitrePage, VignetteCategorie } from "@/app/ui";
 import { STYLE_CATEGORIES } from "@/lib/annonces/style-categories";
 import { CATEGORIES, TYPES, type CategorieAnnonce, type TypeAnnonce } from "@/lib/annonces/valider";
+import { CAMPUS } from "@/lib/campus";
 
 type Annonce = {
   id: string;
@@ -49,11 +50,23 @@ export default async function PageAnnonces({
   if (!user) redirect("/connexion");
 
   // Filtres : on ne garde que des valeurs connues.
-  const { type, categorie, mes, q } = await searchParams;
+  const [{ type, categorie, mes, q, campus: choixCampus }, { data: moi }] = await Promise.all([
+    searchParams,
+    supabase.from("profils").select("campus").eq("id", user.id).maybeSingle(),
+  ]);
   const filtreType = typeof type === "string" && Object.hasOwn(TYPES, type) ? type : "";
   const filtreCategorie = typeof categorie === "string" && Object.hasOwn(CATEGORIES, categorie) ? categorie : "";
   const mesAnnonces = mes === "1";
   const recherche = nettoyerRecherche(q);
+  // « Mon campus » est le filtre par défaut quand j'ai choisi mon campus ; ?campus=tous montre les 6 campus.
+  const monCampus = CAMPUS.find((c) => c === moi?.campus) ?? null;
+  const tousLesCampus = choixCampus === "tous";
+  const filtreCampus = monCampus && !tousLesCampus && !mesAnnonces ? monCampus : null;
+
+  // Les auteurs de mon campus (le campus est sur le profil de l'auteur, pas sur l'annonce).
+  const { data: auteursDuCampus } = filtreCampus
+    ? await supabase.from("profils").select("id").eq("campus", filtreCampus)
+    : { data: null };
 
   let requete = supabase
     .from("annonces")
@@ -62,6 +75,7 @@ export default async function PageAnnonces({
     .limit(100);
   if (filtreType) requete = requete.eq("type", filtreType);
   if (filtreCategorie) requete = requete.eq("categorie", filtreCategorie);
+  if (auteursDuCampus) requete = requete.in("auteur_id", auteursDuCampus.map((p) => p.id as string));
   if (recherche) requete = requete.or(`titre.ilike.%${recherche}%,description.ilike.%${recherche}%`);
   // « Mes annonces » : toutes les miennes, même pourvues. Sinon : seulement les annonces actives.
   requete = mesAnnonces ? requete.eq("auteur_id", user.id) : requete.eq("statut", "active");
@@ -72,10 +86,11 @@ export default async function PageAnnonces({
   // Prénom des auteurs + mes demandes déjà envoyées (pour afficher leur statut sur la carte).
   const auteurs = [...new Set(annonces.map((a) => a.auteur_id))];
   const [{ data: profils }, { data: mesDemandes }] = await Promise.all([
-    supabase.from("profils").select("id, prenom, competences").in("id", auteurs),
+    supabase.from("profils").select("id, prenom, competences, campus").in("id", auteurs),
     supabase.from("demandes_contact").select("annonce_id, statut").eq("demandeur_id", user.id),
   ]);
   const prenom = new Map((profils ?? []).map((p) => [p.id as string, p.prenom as string]));
+  const campusAuteur = new Map((profils ?? []).map((p) => [p.id as string, p.campus as string | null]));
   // Les 2 premières compétences validées de l'auteur (profil IA), affichées sur la carte.
   const competences = new Map(
     (profils ?? []).map((p) => [p.id as string, ((p.competences as string[] | null) ?? []).slice(0, 2)]),
@@ -87,12 +102,19 @@ export default async function PageAnnonces({
   // Liens des filtres : chaque pastille garde les autres filtres et change le sien.
   const lien = (changement: Record<string, string>) => {
     const p = new URLSearchParams();
-    const valeurs = { type: filtreType, categorie: filtreCategorie, mes: mesAnnonces ? "1" : "", q: recherche, ...changement };
+    const valeurs = {
+      type: filtreType,
+      categorie: filtreCategorie,
+      mes: mesAnnonces ? "1" : "",
+      q: recherche,
+      campus: tousLesCampus ? "tous" : "",
+      ...changement,
+    };
     for (const [cle, valeur] of Object.entries(valeurs)) if (valeur) p.set(cle, valeur);
     const texte = p.toString();
     return texte ? `/annonces?${texte}` : "/annonces";
   };
-  const filtreActif = Boolean(filtreType || filtreCategorie || mesAnnonces || recherche);
+  const filtreActif = Boolean(filtreType || filtreCategorie || mesAnnonces || recherche || filtreCampus);
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-6 sm:px-6 sm:py-10">
@@ -112,6 +134,7 @@ export default async function PageAnnonces({
         {filtreType && <input type="hidden" name="type" value={filtreType} />}
         {filtreCategorie && <input type="hidden" name="categorie" value={filtreCategorie} />}
         {mesAnnonces && <input type="hidden" name="mes" value="1" />}
+        {tousLesCampus && <input type="hidden" name="campus" value="tous" />}
         <input
           type="search"
           name="q"
@@ -124,6 +147,17 @@ export default async function PageAnnonces({
           Chercher
         </button>
       </form>
+
+      {monCampus && !mesAnnonces && (
+        <div className="mb-3 flex flex-wrap gap-2" aria-label="Campus">
+          <Pastille href={lien({ campus: "" })} actif={!tousLesCampus}>
+            Mon campus · {monCampus}
+          </Pastille>
+          <Pastille href={lien({ campus: "tous" })} actif={tousLesCampus}>
+            Tous les campus
+          </Pastille>
+        </div>
+      )}
 
       <div className="mb-3 flex flex-wrap gap-2" aria-label="Type d'annonce">
         <Pastille href={lien({ type: "" })} actif={!filtreType}>Tout</Pastille>
@@ -178,9 +212,19 @@ export default async function PageAnnonces({
         <EtatVide
           icone={filtreActif ? "recherche" : "etincelles"}
           titre={filtreActif ? "Aucune annonce ne correspond" : "Publie la première annonce"}
-          texte={filtreActif ? "Essaie une autre catégorie ou un autre mot." : "Propose ce que tu sais faire, ou dis ce que tu cherches."}
+          texte={
+            filtreCampus
+              ? `Rien pour l'instant à ${filtreCampus} avec ces filtres : regarde les autres campus.`
+              : filtreActif
+                ? "Essaie une autre catégorie ou un autre mot."
+                : "Propose ce que tu sais faire, ou dis ce que tu cherches."
+          }
           action={
-            filtreActif ? (
+            filtreCampus ? (
+              <Link href={lien({ campus: "tous" })} className="bouton bouton-secondaire">
+                Voir tous les campus
+              </Link>
+            ) : filtreActif ? (
               <Link href="/annonces" className="bouton bouton-secondaire">
                 Effacer les filtres
               </Link>
@@ -223,6 +267,12 @@ export default async function PageAnnonces({
 
               <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
                 <PastilleCategorie categorie={annonce.categorie} />
+                {campusAuteur.get(annonce.auteur_id) && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-violet/10 px-2.5 py-1 text-xs font-bold text-violet">
+                    <Icone nom="epingle" taille={12} />
+                    ESP {campusAuteur.get(annonce.auteur_id)}
+                  </span>
+                )}
                 {estMoi && <span className="rounded-full bg-violet/10 px-2.5 py-1 text-xs font-bold text-violet">Mon annonce</span>}
                 {annonce.statut === "pourvue" && (
                   <span className="rounded-full bg-indigo px-2.5 py-1 text-xs font-bold text-white">

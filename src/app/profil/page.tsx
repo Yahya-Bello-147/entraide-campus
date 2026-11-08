@@ -19,11 +19,12 @@ export default async function PageProfil({
   if (!user) redirect("/connexion");
 
   const [{ data: profil }, { data: coordonnees }, { raison }] = await Promise.all([
-    supabase.from("profils").select("prenom, competences").eq("id", user.id).maybeSingle(),
+    supabase.from("profils").select("prenom, competences, campus").eq("id", user.id).maybeSingle(),
     supabase.from("coordonnees").select("email, telephone").eq("user_id", user.id).maybeSingle(),
     searchParams,
   ]);
   const prenom = (profil?.prenom as string | undefined) ?? null;
+  const campus = (profil?.campus as string | null | undefined) ?? null;
 
   return (
     <main className="flex flex-1 flex-col">
@@ -35,7 +36,10 @@ export default async function PageProfil({
           </span>
           <div className="min-w-0 flex-1">
             <h1 className="titre truncate text-3xl">{prenom ?? "Mon profil"}</h1>
-            <p className="truncate text-sm text-white/80">{user.email}</p>
+            <p className="truncate text-sm text-white/80">
+              {campus ? `ESP ${campus} · ` : ""}
+              {user.email}
+            </p>
           </div>
           <form action={deconnexion}>
             <button type="submit" className="bouton border border-white/40 bg-white/15 text-white hover:bg-white/25">
@@ -48,10 +52,10 @@ export default async function PageProfil({
 
       <div className="mx-auto grid w-full max-w-5xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2">
         <div className="flex min-w-0 flex-col gap-4">
-          {raison === "incomplet" && !(profil && coordonnees) && (
+          {raison === "incomplet" && !(campus && coordonnees) && (
             <p role="alert" className="alerte-erreur">
-              Complète d&apos;abord ton profil : ton prénom s&apos;affichera sur tes annonces et tes coordonnées seront partagées
-              après accord.
+              Complète d&apos;abord ton profil : ton prénom et ton campus s&apos;afficheront sur tes annonces, et tes coordonnées
+              seront partagées après accord.
             </p>
           )}
           <section className="carte p-5 sm:p-6">
@@ -61,6 +65,7 @@ export default async function PageProfil({
                 prenom: profil?.prenom ?? "",
                 email: coordonnees?.email ?? user.email ?? "",
                 telephone: coordonnees?.telephone ?? "",
+                campus: campus ?? "",
               }}
             />
           </section>

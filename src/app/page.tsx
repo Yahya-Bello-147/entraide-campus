@@ -121,7 +121,15 @@ function Accueil() {
 /* ───────────── Connecté : le tableau de bord ───────────── */
 
 type DemandeRecue = { id: string; demandeur_id: string; annonces: { titre: string } | null };
-type AnnonceRecente = { id: string; titre: string; categorie: CategorieAnnonce; type: string; prix: number | null; lieu: string | null };
+type AnnonceRecente = {
+  id: string;
+  auteur_id: string;
+  titre: string;
+  categorie: CategorieAnnonce;
+  type: string;
+  prix: number | null;
+  lieu: string | null;
+};
 
 const formatPrix = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
 const formatJour = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" });
@@ -138,7 +146,7 @@ async function TableauDeBord({ userId }: { userId: string }) {
     { data: recherches },
   ] =
     await Promise.all([
-      supabase.from("profils").select("prenom, competences").eq("id", userId).maybeSingle(),
+      supabase.from("profils").select("prenom, competences, campus").eq("id", userId).maybeSingle(),
       supabase.from("annonces").select("statut").eq("auteur_id", userId),
       supabase
         .from("demandes_contact")
@@ -153,11 +161,11 @@ async function TableauDeBord({ userId }: { userId: string }) {
         .eq("statut", "acceptee"),
       supabase
         .from("annonces")
-        .select("id, titre, categorie, type, prix, lieu")
+        .select("id, auteur_id, titre, categorie, type, prix, lieu")
         .eq("statut", "active")
         .neq("auteur_id", userId)
         .order("created_at", { ascending: false })
-        .limit(4),
+        .limit(30),
       // Les « Je cherche » des autres, à comparer avec mes compétences (palier 3).
       supabase
         .from("annonces")
@@ -199,22 +207,58 @@ async function TableauDeBord({ userId }: { userId: string }) {
     if (derniers.length === 2) break;
   }
 
-  const ids = [...new Set([...demandes.map((d) => d.demandeur_id), ...derniers.map((m) => autreDe.get(m.demande_id)!)])];
+  const auteursRecents = ((recentes ?? []) as AnnonceRecente[]).map((a) => a.auteur_id);
+  const ids = [
+    ...new Set([
+      ...demandes.map((d) => d.demandeur_id),
+      ...derniers.map((m) => autreDe.get(m.demande_id)!),
+      ...auteursRecents,
+    ]),
+  ];
   const { data: profils } = ids.length
-    ? await supabase.from("profils").select("id, prenom").in("id", ids)
+    ? await supabase.from("profils").select("id, prenom, campus").in("id", ids)
     : { data: [] };
   const prenomDe = new Map((profils ?? []).map((p) => [p.id as string, p.prenom as string]));
 
   const actives = (mesAnnonces ?? []).filter((a) => a.statut === "active").length;
   const pourvues = (mesAnnonces ?? []).filter((a) => a.statut === "pourvue").length;
   const prenom = (profil?.prenom as string | undefined) ?? null;
+  const campus = CAMPUS.find((c) => c === profil?.campus) ?? null;
+
+  // Annonces récentes : d'abord celles de mon campus (étape 2), sinon celles de tous les campus.
+  const campusDe = new Map((profils ?? []).map((p) => [p.id as string, p.campus as string | null]));
+  const toutesRecentes = (recentes ?? []) as AnnonceRecente[];
+  const deMonCampus = campus ? toutesRecentes.filter((a) => campusDe.get(a.auteur_id) === campus) : [];
+  const recentesAffichees = (deMonCampus.length > 0 ? deMonCampus : toutesRecentes).slice(0, 4);
 
   return (
     <main className="flex flex-1 flex-col">
       <section className="relative overflow-hidden bg-violet text-white md:rounded-b-[2.5rem] lg:m-5 lg:rounded-[2rem]">
-        <DecorBandeau avecIllustration />
+        <DecorBandeau avecIllustration={!campus} />
+        {campus && (
+          // Le monument de mon campus sur une « carte postale » claire, à la place de l'ordinateur (grand écran).
+          <div
+            className="absolute top-1/2 right-10 hidden h-40 w-56 -translate-y-1/2 rotate-3 items-end justify-center rounded-3xl border-4 border-white shadow-[0_12px_28px_rgb(0_0_0/0.2)] lg:flex"
+            style={{ background: couleurCampus(campus) }}
+          >
+            <MonumentCampus campus={campus} className="h-32" />
+          </div>
+        )}
         <div className="relative mx-auto max-w-6xl px-4 pt-6 pb-10 sm:px-6 sm:pt-10">
-          <p className="text-sm text-white/75 first-letter:uppercase">{formatJour.format(new Date())}</p>
+          <div className="flex flex-wrap items-center gap-2.5">
+            {campus ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-sm font-extrabold text-violet">
+                <Icone nom="epingle" taille={14} className="text-rose" />
+                ESP {campus}
+              </span>
+            ) : (
+              <Link href="/profil" className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-sm font-bold hover:bg-white/30">
+                <Icone nom="epingle" taille={14} />
+                Choisis ton campus
+              </Link>
+            )}
+            <p className="text-sm text-white/75 first-letter:uppercase">{formatJour.format(new Date())}</p>
+          </div>
           <h1 className="titre mt-1 text-3xl sm:text-4xl">Bonjour {prenom ?? "et bienvenue"} !</h1>
           <div className="mt-6 grid max-w-xl grid-cols-3 gap-3">
             <Chiffre valeur={actives} libelle={actives > 1 ? "annonces actives" : "annonce active"} />
@@ -364,13 +408,15 @@ async function TableauDeBord({ userId }: { userId: string }) {
 
           <section>
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-lg font-extrabold">Annonces récentes</h2>
+              <h2 className="text-lg font-extrabold">
+                Annonces récentes{deMonCampus.length > 0 ? ` · à ${campus}` : ""}
+              </h2>
               <Link href="/annonces" className="text-sm font-semibold text-indigo">
                 Toutes les annonces
               </Link>
             </div>
             <div className="flex flex-col gap-3">
-              {((recentes ?? []) as AnnonceRecente[]).map((a) => (
+              {recentesAffichees.map((a) => (
                 <Link key={a.id} href={`/annonces/${a.id}`} className="carte carte-survol flex items-center gap-3 p-3.5">
                   <VignetteCategorie categorie={a.categorie} taille={48} />
                   <span className="min-w-0 flex-1">
@@ -383,7 +429,7 @@ async function TableauDeBord({ userId }: { userId: string }) {
                   {a.prix !== null && <span className="font-extrabold text-violet">{formatPrix.format(a.prix)}</span>}
                 </Link>
               ))}
-              {(recentes ?? []).length === 0 && <p className="text-sm text-gris">Aucune nouvelle annonce pour le moment.</p>}
+              {recentesAffichees.length === 0 && <p className="text-sm text-gris">Aucune nouvelle annonce pour le moment.</p>}
             </div>
           </section>
         </div>

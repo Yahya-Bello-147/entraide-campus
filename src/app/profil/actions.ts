@@ -8,7 +8,12 @@ export type EtatProfil = { erreur?: string; succes?: boolean; valeurs?: ChampsPr
 
 export async function enregistrerProfil(_etat: EtatProfil, formData: FormData): Promise<EtatProfil> {
   const lire = (nom: string) => String(formData.get(nom) ?? "");
-  const valeurs: ChampsProfil = { prenom: lire("prenom"), email: lire("email"), telephone: lire("telephone") };
+  const valeurs: ChampsProfil = {
+    prenom: lire("prenom"),
+    email: lire("email"),
+    telephone: lire("telephone"),
+    campus: lire("campus"),
+  };
   const resultat = validerProfil(valeurs);
   if (!resultat.ok) return { erreur: resultat.erreur, valeurs };
 
@@ -18,8 +23,8 @@ export async function enregistrerProfil(_etat: EtatProfil, formData: FormData): 
   } = await supabase.auth.getUser();
   if (!user) return { erreur: "Ta session a expiré. Reconnecte-toi.", valeurs };
 
-  const { prenom, email, telephone } = resultat.profil;
-  const { error: erreurProfil } = await supabase.from("profils").upsert({ id: user.id, prenom });
+  const { prenom, email, telephone, campus } = resultat.profil;
+  const { error: erreurProfil } = await supabase.from("profils").upsert({ id: user.id, prenom, campus });
   const { error: erreurCoordonnees } = await supabase
     .from("coordonnees")
     .upsert({ user_id: user.id, email, telephone, updated_at: new Date().toISOString() });
@@ -28,5 +33,5 @@ export async function enregistrerProfil(_etat: EtatProfil, formData: FormData): 
   }
 
   revalidatePath("/", "layout");
-  return { succes: true, valeurs: { prenom, email, telephone: telephone ?? "" } };
+  return { succes: true, valeurs: { prenom, email, telephone: telephone ?? "", campus } };
 }

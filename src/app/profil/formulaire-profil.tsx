@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { enregistrerProfil } from "./actions";
 import { Icone } from "@/app/icone";
 import type { ChampsProfil } from "@/lib/profil/valider";
+import { CAMPUS } from "@/lib/campus";
 
 export function FormulaireProfil({ initial }: { initial: ChampsProfil }) {
   const [etat, formAction, enCours] = useActionState(enregistrerProfil, {});
@@ -17,6 +18,25 @@ export function FormulaireProfil({ initial }: { initial: ChampsProfil }) {
         </span>
         <input name="prenom" defaultValue={v.prenom} required maxLength={50} autoComplete="given-name" className="champ" />
       </label>
+
+      <fieldset className="flex flex-col gap-2">
+        <legend className="etiquette mb-2">
+          <span>
+            Mon campus ESP <span className="font-normal text-gris">(on te montre d&apos;abord les annonces de ton campus)</span>
+          </span>
+        </legend>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {CAMPUS.map((c) => (
+            <label
+              key={c}
+              className="flex cursor-pointer items-center justify-center gap-1.5 rounded-2xl border-2 border-ligne px-2 py-3 text-sm font-bold transition hover:border-violet/40 has-[:checked]:border-violet has-[:checked]:bg-violet/10 has-[:checked]:text-indigo has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-violet"
+            >
+              <input type="radio" name="campus" value={c} defaultChecked={v.campus === c} required className="sr-only" />
+              {c}
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       <div className="flex flex-col gap-4 rounded-2xl bg-gray-50 p-4">
         <p className="flex items-start gap-2 text-sm font-semibold text-gray-700">
