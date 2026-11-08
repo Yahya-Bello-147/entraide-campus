@@ -18,6 +18,11 @@ export default function PageConnexion() {
       }
     >
       <FormulaireAuth action={connexion} libelleBouton="Se connecter" autocompleteMotDePasse="current-password" />
+      <p className="mt-4 text-center text-sm">
+        <Link href="/mot-de-passe-oublie" className="font-semibold text-indigo hover:underline">
+          Mot de passe oublié ?
+        </Link>
+      </p>
     </CadreAuth>
   );
 }
