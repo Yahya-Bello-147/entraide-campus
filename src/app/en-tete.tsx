@@ -14,14 +14,14 @@ export async function EnTete() {
     return (
       // Transparente et haute de 4,5 rem : sur l'accueil, la vague violette passe derrière.
       <header className="relative z-30 h-18">
-        <div className="mx-auto flex h-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+        {/* Toute la largeur : les boutons restent à droite, sur la vague violette, même sur un grand écran. */}
+        <div className="flex h-full items-center justify-between gap-3 px-4 sm:px-6 lg:px-10">
           <Logo />
           <nav className="flex items-center gap-2">
-            {/* Fond blanc léger : lisible sur la vague violette comme sur le fond pêche des autres pages. */}
-            <Link href="/#campus" className="bouton hidden bg-white/70 font-semibold text-indigo hover:bg-white lg:inline-flex">
+            <Link href="/#campus" className="bouton bouton-contour hidden lg:inline-flex">
               Les campus
             </Link>
-            <Link href="/#comment" className="bouton hidden bg-white/70 font-semibold text-indigo hover:bg-white lg:inline-flex">
+            <Link href="/#comment" className="bouton bouton-contour hidden lg:inline-flex">
               Comment ça marche
             </Link>
             <Link href="/connexion" className="bouton bouton-contour">

@@ -72,7 +72,7 @@ export function VaguesAccueil() {
       viewBox="0 0 1280 800"
       preserveAspectRatio="none"
     >
-      <path d="M360 0 H1280 V190 C1190 230 1090 140 970 160 C860 178 780 120 720 75 C650 25 540 8 360 0 Z" className="fill-violet" />
+      <path d="M300 0 H1280 V200 C1190 240 1090 150 970 170 C860 188 760 150 660 120 C560 90 470 40 300 0 Z" className="fill-violet" />
       <path d="M0 590 C110 610 170 690 300 712 C430 734 520 700 640 750 C690 772 720 790 730 800 H0 Z" className="fill-violet" />
       <path d="M0 560 C120 585 180 660 310 685" fill="none" stroke="#c7aee0" strokeWidth="10" strokeLinecap="round" />
       <path d="M1280 640 C1210 660 1170 730 1150 800 H1280 Z" fill="#c7aee0" />
