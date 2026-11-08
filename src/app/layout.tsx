@@ -11,7 +11,7 @@ const jakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: "CampusLink",
-  description: "Le campus qui se donne un coup de main : propose ce que tu sais faire, trouve ce dont tu as besoin.",
+  description: "L'entraide des étudiants de l'ESP, sur les 6 campus : propose ce que tu sais faire, trouve ce dont tu as besoin.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

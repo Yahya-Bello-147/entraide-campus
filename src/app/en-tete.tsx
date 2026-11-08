@@ -16,7 +16,14 @@ export async function EnTete() {
       <header className="relative z-30 h-18">
         <div className="mx-auto flex h-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
           <Logo />
-          <nav className="flex gap-2">
+          <nav className="flex items-center gap-2">
+            {/* Fond blanc léger : lisible sur la vague violette comme sur le fond pêche des autres pages. */}
+            <Link href="/#campus" className="bouton hidden bg-white/70 font-semibold text-indigo hover:bg-white lg:inline-flex">
+              Les campus
+            </Link>
+            <Link href="/#comment" className="bouton hidden bg-white/70 font-semibold text-indigo hover:bg-white lg:inline-flex">
+              Comment ça marche
+            </Link>
             <Link href="/connexion" className="bouton bouton-contour">
               Connexion
             </Link>

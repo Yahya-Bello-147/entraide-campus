@@ -1,3 +1,6 @@
+import type { ReactNode } from "react";
+import type { Campus } from "@/lib/campus";
+
 // Dessins du style « vagues » (maquette du 27 oct) : tout est dessiné ici, aucune image téléchargée.
 // Purement décoratifs : aria-hidden, et pointer-events-none pour ne jamais gêner un clic.
 
@@ -137,6 +140,127 @@ export function DecorMenu() {
       <Etoile x={204} y={84} r={14} className="fill-or" />
       <circle cx="30" cy="330" r="5" fill="none" stroke="#ffffff" strokeWidth="2" opacity="0.4" />
       <circle cx="220" cy="430" r="4" fill="#ffffff" opacity="0.35" />
+    </svg>
+  );
+}
+
+// Un monument dessiné par campus de l'ESP (accueil, puis bandeau « Mon campus »).
+const MONUMENTS: Record<Campus, { fond: string; vue: string; dessin: ReactNode }> = {
+  // Tour Eiffel
+  Paris: {
+    fond: "#e6ecfb",
+    vue: "0 0 160 130",
+    dessin: (
+      <>
+        <ellipse cx="80" cy="122" rx="60" ry="6" fill="#c9d3f2" />
+        <path d="M80 8 L86 50 L100 120 H88 L80 96 L72 120 H60 L74 50 Z" className="fill-indigo" />
+        <rect x="68" y="48" width="24" height="6" rx="2" className="fill-indigo" />
+        <rect x="62" y="82" width="36" height="6" rx="2" className="fill-indigo" />
+        <path d="M74 96 Q80 86 86 96" fill="#e6ecfb" />
+      </>
+    ),
+  },
+  // Basilique de Fourvière
+  Lyon: {
+    fond: "#f3ebf9",
+    vue: "0 0 170 130",
+    dessin: (
+      <>
+        <ellipse cx="85" cy="122" rx="70" ry="6" fill="#dccbee" />
+        <rect x="40" y="62" width="90" height="58" className="fill-violet" />
+        <rect x="32" y="40" width="16" height="80" className="fill-bleu" />
+        <rect x="122" y="40" width="16" height="80" className="fill-bleu" />
+        <path d="M32 40 L40 30 L48 40 Z M122 40 L130 30 L138 40 Z" className="fill-bleu" />
+        <path d="M70 62 Q85 36 100 62 Z" className="fill-bleu" />
+        <rect x="77" y="88" width="16" height="32" rx="8" fill="#f3ebf9" />
+        <rect x="52" y="74" width="10" height="16" rx="5" fill="#f3ebf9" />
+        <rect x="108" y="74" width="10" height="16" rx="5" fill="#f3ebf9" />
+      </>
+    ),
+  },
+  // Place de la Bourse et miroir d'eau
+  Bordeaux: {
+    fond: "#e3f4fa",
+    vue: "0 0 190 130",
+    dessin: (
+      <>
+        <rect x="20" y="58" width="150" height="40" fill="#e8c9a0" />
+        <path d="M75 58 L95 40 L115 58 Z" fill="#d9b585" />
+        <g fill="#c9a476">
+          {[30, 46, 62, 120, 136, 152].map((x) => (
+            <rect key={x} x={x} y="66" width="8" height="24" />
+          ))}
+          <rect x="90" y="66" width="10" height="24" />
+        </g>
+        <rect x="10" y="98" width="170" height="26" rx="4" fill="#7dd3e8" />
+        <rect x="20" y="104" width="150" height="3" rx="2" fill="#ffffff" opacity="0.7" />
+        <rect x="40" y="113" width="110" height="3" rx="2" fill="#ffffff" opacity="0.5" />
+      </>
+    ),
+  },
+  // Grue jaune de l'île de Nantes
+  Nantes: {
+    fond: "#fff4d6",
+    vue: "0 0 170 130",
+    dessin: (
+      <>
+        <ellipse cx="85" cy="122" rx="65" ry="6" fill="#f2dfa8" />
+        <rect x="70" y="40" width="14" height="82" fill="#f5b83d" />
+        <path d="M70 50 L84 64 M84 50 L70 64 M70 74 L84 88 M84 74 L70 88 M70 98 L84 112 M84 98 L70 112" stroke="#d99a1e" strokeWidth="2" />
+        <rect x="20" y="30" width="140" height="10" fill="#f5b83d" />
+        <rect x="60" y="22" width="34" height="18" rx="3" fill="#e0a52c" />
+        <line x1="140" y1="40" x2="140" y2="78" stroke="#3f3a4a" strokeWidth="2" />
+        <rect x="133" y="78" width="14" height="10" fill="#3f3a4a" />
+      </>
+    ),
+  },
+  // Capitole, « la ville rose »
+  Toulouse: {
+    fond: "#fde2e8",
+    vue: "0 0 190 130",
+    dessin: (
+      <>
+        <ellipse cx="95" cy="122" rx="80" ry="6" fill="#f6c3cf" />
+        <rect x="20" y="56" width="150" height="66" fill="#ef8fa0" />
+        <rect x="16" y="48" width="158" height="10" fill="#e5788b" />
+        <path d="M70 48 L95 30 L120 48 Z" fill="#e5788b" />
+        <g fill="#fde2e8">
+          {[32, 50, 68, 114, 132, 150].map((x) => (
+            <rect key={x} x={x} y="68" width="8" height="40" />
+          ))}
+          <rect x="86" y="68" width="18" height="54" rx="9" />
+        </g>
+      </>
+    ),
+  },
+  // Beffroi
+  Lille: {
+    fond: "#def4ec",
+    vue: "0 0 160 130",
+    dessin: (
+      <>
+        <ellipse cx="80" cy="122" rx="55" ry="6" fill="#bfe6d6" />
+        <rect x="64" y="34" width="32" height="88" fill="#3fa77a" />
+        <path d="M60 34 L80 4 L100 34 Z" fill="#2f8a63" />
+        <circle cx="80" cy="54" r="9" fill="#ffffff" />
+        <path d="M80 48 V54 H85" stroke="#2f8a63" strokeWidth="2" fill="none" strokeLinecap="round" />
+        <rect x="40" y="80" width="24" height="42" fill="#5bbf94" />
+        <rect x="96" y="80" width="24" height="42" fill="#5bbf94" />
+        <rect x="74" y="96" width="12" height="26" rx="6" fill="#def4ec" />
+      </>
+    ),
+  },
+};
+
+export function couleurCampus(campus: Campus) {
+  return MONUMENTS[campus].fond;
+}
+
+export function MonumentCampus({ campus, className = "" }: { campus: Campus; className?: string }) {
+  const m = MONUMENTS[campus];
+  return (
+    <svg aria-hidden="true" viewBox={m.vue} className={`pointer-events-none ${className}`}>
+      {m.dessin}
     </svg>
   );
 }

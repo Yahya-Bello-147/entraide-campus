@@ -2,10 +2,11 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { repondreDemande } from "./demandes/actions";
 import { Icone, type NomIcone } from "./icone";
-import { DecorBandeau, IllustrationAccueil, VaguesAccueil } from "./illustrations";
+import { couleurCampus, DecorBandeau, IllustrationAccueil, MonumentCampus, VaguesAccueil } from "./illustrations";
 import { Avatar, PastilleCategorie, VignetteCategorie } from "./ui";
 import type { CategorieAnnonce } from "@/lib/annonces/valider";
 import { meilleuresCorrespondances } from "@/lib/annonces/correspondance";
+import { CAMPUS } from "@/lib/campus";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -18,7 +19,7 @@ export default async function Home() {
 /* ───────────── Avant connexion ───────────── */
 
 const ETAPES: { icone: NomIcone; titre: string; texte: string; couleur: string }[] = [
-  { icone: "utilisateur", titre: "Crée ton compte", texte: "Ton CV remplit ton profil grâce à l'IA.", couleur: "#ede9fe" },
+  { icone: "utilisateur", titre: "Crée ton compte ESP", texte: "Ton CV remplit ton profil grâce à l'IA.", couleur: "#ede9fe" },
   { icone: "plus", titre: "Publie une annonce", texte: "Je propose ou je cherche, en une minute.", couleur: "#dbeafe" },
   { icone: "cadenas", titre: "Échange en confiance", texte: "Tes coordonnées restent cachées jusqu'à ton accord.", couleur: "#fce7f3" },
 ];
@@ -29,39 +30,66 @@ function Accueil() {
       {/* Remonte sous la barre du haut (transparente) pour que la vague passe derrière le menu. */}
       <section className="relative -mt-18 overflow-hidden pt-18">
         <VaguesAccueil />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-4 pt-10 pb-24 sm:px-6 lg:grid-cols-[1fr_1.1fr] lg:pt-16 lg:pb-32">
-          <div className="flex flex-col gap-6">
-            <div className="relative self-start">
-              <h1 className="titre text-5xl leading-[0.95] text-indigo uppercase sm:text-7xl">
-                Le campus
+        <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-4 pt-10 pb-24 sm:px-6 lg:grid-cols-[1fr_1fr] lg:pt-14 lg:pb-32">
+          <div className="flex flex-col gap-5">
+            <span className="self-start rounded-full bg-white px-3.5 py-2 text-xs font-extrabold text-violet shadow-sm sm:text-sm">
+              Pour les étudiants de l&apos;ESP · 6 campus
+            </span>
+            <div className="relative mt-2 self-start">
+              <h1 className="titre text-5xl leading-none text-indigo uppercase sm:text-7xl sm:whitespace-nowrap">
+                L&apos;ESP qui
                 <br />
-                qui s&apos;aide
+                s&apos;entraide
               </h1>
-              <span className="absolute -top-12 -right-6 hidden h-16 w-16 items-center justify-center rounded-full bg-white text-center text-xs leading-tight font-extrabold text-indigo shadow-md sm:-top-14 sm:-right-16 sm:flex sm:h-[74px] sm:w-[74px] sm:text-sm">
-                entre
+              <span className="absolute -top-1 -right-24 hidden h-[78px] w-[78px] items-center justify-center rounded-full bg-or text-center text-sm leading-tight font-extrabold text-encre shadow-md sm:flex">
+                6
                 <br />
-                étudiants
+                campus
               </span>
             </div>
-            <p className="max-w-md text-lg leading-relaxed text-gray-700">
-              Propose ce que tu sais faire, trouve ce dont tu as besoin : photo, vidéo, dev, coloc, covoiturage… Réservé
-              aux étudiants ESD et ESP.
-            </p>
+            <div>
+              <p className="max-w-md text-lg leading-relaxed text-gray-700">
+                Propose ce que tu sais faire, trouve ce dont tu as besoin, entre étudiants de ton campus.
+              </p>
+              <p className="mt-2 text-sm text-gris">Photo · Vidéo · Dev · Coloc · Covoiturage · Objets</p>
+            </div>
             <div className="flex flex-wrap items-center gap-3">
               <Link href="/inscription" className="bouton bouton-principal px-7">
-                Créer mon compte
+                Créer mon compte ESP
               </Link>
               <Link href="/connexion" className="bouton font-bold text-indigo hover:bg-white/60">
                 Se connecter →
               </Link>
             </div>
+            <p className="-mt-2 text-sm text-gris">
+              Avec ton adresse <span className="whitespace-nowrap">@mail-esp.com</span> ou{" "}
+              <span className="whitespace-nowrap">@mail-esd.com</span>
+            </p>
           </div>
           <IllustrationAccueil className="mx-auto w-full max-w-md lg:max-w-none" />
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
-        <p className="mb-4 text-sm font-bold tracking-wider text-indigo uppercase">Comment ça marche</p>
+      <section id="campus" className="mx-auto w-full max-w-6xl scroll-mt-6 px-4 pt-4 pb-6 sm:px-6">
+        <p className="text-sm font-bold tracking-wider text-violet uppercase">Les campus</p>
+        <h2 className="titre mt-1 mb-6 text-3xl text-indigo sm:text-4xl">6 campus, une seule communauté ESP</h2>
+        <ul className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+          {CAMPUS.map((c) => (
+            <li key={c} className="carte overflow-hidden">
+              <div className="flex h-28 items-end justify-center sm:h-36" style={{ background: couleurCampus(c) }}>
+                <MonumentCampus campus={c} className="h-24 sm:h-32" />
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
+                <span className="text-lg font-extrabold text-indigo">{c}</span>
+                <span className="rounded-full bg-violet/10 px-2.5 py-1 text-xs font-bold text-violet">ESP {c}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section id="comment" className="mx-auto w-full max-w-6xl scroll-mt-6 px-4 py-12 sm:px-6">
+        <p className="mb-4 text-sm font-bold tracking-wider text-violet uppercase">Comment ça marche</p>
         <div className="grid gap-4 sm:grid-cols-3">
           {ETAPES.map((e) => (
             <div key={e.titre} className="carte flex items-center gap-4 p-5 sm:flex-col sm:items-start">
@@ -79,6 +107,13 @@ function Accueil() {
           ))}
         </div>
       </section>
+
+      <footer className="mt-auto bg-violet px-4 py-5 text-white sm:px-6">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 text-sm">
+          <b className="text-base">CampusLink · l&apos;entraide des étudiants de l&apos;ESP</b>
+          <span className="text-white/85">{CAMPUS.join(" · ")}</span>
+        </div>
+      </footer>
     </main>
   );
 }
