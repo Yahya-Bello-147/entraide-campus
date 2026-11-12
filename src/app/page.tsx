@@ -277,7 +277,7 @@ async function TableauDeBord({ userId }: { userId: string }) {
               </span>
               <span className="flex-1">
                 <span className="block font-bold">Complète ton profil</span>
-                <span className="block text-sm text-gris">Il faut un prénom et des coordonnées pour publier et contacter.</span>
+                <span className="block text-sm text-gris">Il faut un prénom, ton campus et des coordonnées pour publier et contacter.</span>
               </span>
               <Icone nom="fleche" taille={20} className="text-gris" />
             </Link>
@@ -405,42 +405,44 @@ async function TableauDeBord({ userId }: { userId: string }) {
               </ul>
             )}
           </section>
-
-          <section>
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-lg font-extrabold">
-                Annonces récentes{deMonCampus.length > 0 ? ` · à ${campus}` : ""}
-              </h2>
-              <Link href="/annonces" className="text-sm font-semibold text-indigo">
-                Toutes les annonces
-              </Link>
-            </div>
-            <div className="flex flex-col gap-3">
-              {recentesAffichees.map((a) => (
-                <Link key={a.id} href={`/annonces/${a.id}`} className="carte carte-survol flex items-center gap-3 p-3.5">
-                  <VignetteCategorie categorie={a.categorie} taille={48} />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate font-bold">{a.titre}</span>
-                    <span className="mt-1 flex flex-wrap items-center gap-2 text-xs text-gris">
-                      <PastilleCategorie categorie={a.categorie} />
-                      {a.lieu && <span>{a.lieu}</span>}
-                    </span>
-                  </span>
-                  {a.prix !== null && <span className="font-extrabold text-violet">{formatPrix.format(a.prix)}</span>}
-                </Link>
-              ))}
-              {recentesAffichees.length === 0 && <p className="text-sm text-gris">Aucune nouvelle annonce pour le moment.</p>}
-            </div>
-          </section>
         </div>
       </div>
+
+      {/* Annonces récentes : sur toute la largeur, en bas du tableau de bord. */}
+      <section className="mx-auto w-full max-w-6xl px-4 pb-8 sm:px-6">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-lg font-extrabold">
+            Annonces récentes{deMonCampus.length > 0 ? ` · à ${campus}` : ""}
+          </h2>
+          <Link href="/annonces" className="text-sm font-semibold text-indigo">
+            Toutes les annonces
+          </Link>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
+          {recentesAffichees.map((a) => (
+            <Link key={a.id} href={`/annonces/${a.id}`} className="carte carte-survol flex min-w-0 items-center gap-3 p-3.5">
+              <VignetteCategorie categorie={a.categorie} taille={48} />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-bold">{a.titre}</span>
+                <span className="mt-1 flex flex-wrap items-center gap-2 text-xs text-gris">
+                  <PastilleCategorie categorie={a.categorie} />
+                  {a.lieu && <span className="truncate">{a.lieu}</span>}
+                </span>
+              </span>
+              {a.prix !== null && <span className="shrink-0 font-extrabold text-violet">{formatPrix.format(a.prix)}</span>}
+            </Link>
+          ))}
+        </div>
+        {recentesAffichees.length === 0 && <p className="text-sm text-gris">Aucune nouvelle annonce pour le moment.</p>}
+      </section>
     </main>
   );
 }
 
 function Chiffre({ valeur, libelle }: { valeur: number; libelle: string }) {
   return (
-    <div className="rounded-2xl border border-white/25 bg-white/15 p-3">
+    // Au premier plan : fond assez opaque et flou derrière, pour que la vague ne passe pas à travers.
+    <div className="relative rounded-2xl border border-white/30 bg-[#a17fcb]/90 p-3 shadow-sm backdrop-blur-sm">
       <p className="text-2xl font-extrabold">{valeur}</p>
       <p className="text-xs leading-tight text-white/85">{libelle}</p>
     </div>
