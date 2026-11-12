@@ -1,12 +1,13 @@
+import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { repondreDemande } from "./demandes/actions";
 import { Icone, type NomIcone } from "./icone";
-import { couleurCampus, DecorBandeau, IllustrationAccueil, MonumentCampus, VaguesAccueil } from "./illustrations";
+import { DecorBandeau, IllustrationAccueil, VaguesAccueil } from "./illustrations";
 import { Avatar, PastilleCategorie, VignetteCategorie } from "./ui";
 import type { CategorieAnnonce } from "@/lib/annonces/valider";
 import { meilleuresCorrespondances } from "@/lib/annonces/correspondance";
-import { CAMPUS } from "@/lib/campus";
+import { CAMPUS, photoCampus } from "@/lib/campus";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -76,8 +77,15 @@ function Accueil() {
         <ul className="grid grid-cols-2 gap-4 lg:grid-cols-3">
           {CAMPUS.map((c) => (
             <li key={c} className="carte overflow-hidden">
-              <div className="flex h-28 items-end justify-center sm:h-36" style={{ background: couleurCampus(c) }}>
-                <MonumentCampus campus={c} className="h-24 sm:h-32" />
+              <div className="relative h-32 sm:h-44">
+                <Image
+                  src={photoCampus(c)}
+                  alt={`Le campus ESP de ${c}`}
+                  fill
+                  sizes="(min-width: 1024px) 360px, 50vw"
+                  className="object-cover"
+                />
+                <CreditPhoto />
               </div>
               <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
                 <span className="text-lg font-extrabold text-indigo">{c}</span>
@@ -236,12 +244,10 @@ async function TableauDeBord({ userId }: { userId: string }) {
       <section className="relative overflow-hidden bg-violet text-white md:rounded-b-[2.5rem] lg:m-5 lg:rounded-[2rem]">
         <DecorBandeau avecIllustration={!campus} />
         {campus && (
-          // Le monument de mon campus sur une « carte postale » claire, à la place de l'ordinateur (grand écran).
-          <div
-            className="absolute top-1/2 right-10 hidden h-40 w-56 -translate-y-1/2 rotate-3 items-end justify-center rounded-3xl border-4 border-white shadow-[0_12px_28px_rgb(0_0_0/0.2)] lg:flex"
-            style={{ background: couleurCampus(campus) }}
-          >
-            <MonumentCampus campus={campus} className="h-32" />
+          // La photo de mon campus en « carte postale », à la place de l'ordinateur (grand écran).
+          <div className="absolute top-1/2 right-10 hidden h-40 w-60 -translate-y-1/2 rotate-3 overflow-hidden rounded-3xl border-4 border-white bg-white shadow-[0_12px_28px_rgb(0_0_0/0.2)] lg:block">
+            <Image src={photoCampus(campus)} alt={`Le campus ESP de ${campus}`} fill sizes="240px" className="object-cover" />
+            <CreditPhoto />
           </div>
         )}
         <div className="relative mx-auto max-w-6xl px-4 pt-6 pb-10 sm:px-6 sm:pt-10">
@@ -436,6 +442,15 @@ async function TableauDeBord({ userId }: { userId: string }) {
         {recentesAffichees.length === 0 && <p className="text-sm text-gris">Aucune nouvelle annonce pour le moment.</p>}
       </section>
     </main>
+  );
+}
+
+// Les photos des campus viennent de l'ESP : on l'indique sur chaque photo.
+function CreditPhoto() {
+  return (
+    <span className="absolute right-2 bottom-2 rounded-full bg-black/45 px-2 py-0.5 text-[10px] font-semibold text-white">
+      Photo : ESP
+    </span>
   );
 }
 

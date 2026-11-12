@@ -39,6 +39,9 @@
   titres et liens **indigo `#4f5fb0`**, jaune `or` `#ffd166` pour les étoiles et pastilles.
 - Vagues, petits dessins (étoiles, ronds, zigzags) et illustrations plates **dessinées dans le code**
   (`src/app/illustrations.tsx`), aucune image téléchargée. Illustrations de l'accueil et du bandeau du tableau de bord.
+- Exception : vraies photos des 6 campus (`public/campus/`, fournies par Yahya le 12 nov, photos de l'ESP créditées
+  « Photo : ESP » ; Nantes recadrée sans l'employée, Lille sans le bandeau). Accord écrit de l'école demandé par Yahya ;
+  en cas de refus, remettre les dessins (`MonumentCampus` dans `illustrations.tsx`).
 - Police Plus Jakarta Sans partout. Une couleur + une icône par catégorie
   (`src/lib/annonces/style-categories.ts`). Icônes maison au trait (`src/app/icone.tsx`), pas d'emoji.
 - Navigation : connecté, barre verticale violette à gauche sur ordinateur (≥ 1024 px, bouton « Publier » rose) ;
