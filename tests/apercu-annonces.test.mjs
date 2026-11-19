@@ -31,3 +31,10 @@ test("un visiteur ne peut toujours pas lire les profils ni les coordonnées", as
   assert.deepEqual(profils ?? [], []);
   assert.deepEqual(coordonnees ?? [], []);
 });
+
+test("un visiteur peut connaître le nombre d'annonces actives, et seulement ce nombre", async () => {
+  const { data, error } = await visiteur.rpc("nombre_annonces_actives");
+  assert.equal(error, null);
+  assert.equal(typeof data, "number");
+  assert.ok(data >= 0);
+});

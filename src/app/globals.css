@@ -175,3 +175,35 @@ body {
     outline-offset: 2px;
   }
 }
+
+/* Accueil « version pro » (19 nov) : cartes en 3D qui flottent et bandes de texte qui défilent.
+   Rien ne bouge pour les personnes qui ont demandé à réduire les animations. */
+@keyframes flotte-1 {
+  0%, 100% { transform: translateY(0) rotateX(14deg) rotateY(-22deg) rotateZ(-4deg); }
+  50% { transform: translateY(-14px) rotateX(14deg) rotateY(-22deg) rotateZ(-4deg); }
+}
+@keyframes flotte-2 {
+  0%, 100% { transform: translateY(0) rotateX(10deg) rotateY(-18deg) rotateZ(3deg); }
+  50% { transform: translateY(-10px) rotateX(10deg) rotateY(-18deg) rotateZ(3deg); }
+}
+@keyframes flotte-3 {
+  0%, 100% { transform: translateY(0) rotateX(12deg) rotateY(-26deg) rotateZ(-1deg); }
+  50% { transform: translateY(-18px) rotateX(12deg) rotateY(-26deg) rotateZ(-1deg); }
+}
+@keyframes defile {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.scene-3d { perspective: 1400px; }
+.flotte-1 { transform: rotateX(14deg) rotateY(-22deg) rotateZ(-4deg); }
+.flotte-2 { transform: rotateX(10deg) rotateY(-18deg) rotateZ(3deg); }
+.flotte-3 { transform: rotateX(12deg) rotateY(-26deg) rotateZ(-1deg); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .flotte-1 { animation: flotte-1 6s ease-in-out infinite; }
+  .flotte-2 { animation: flotte-2 7s ease-in-out infinite; }
+  .flotte-3 { animation: flotte-3 8s ease-in-out infinite; }
+  .defile { animation: defile 28s linear infinite; }
+  .defile-inverse { animation: defile 34s linear infinite reverse; }
+}

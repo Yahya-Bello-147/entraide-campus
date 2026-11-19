@@ -3,7 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { repondreDemande } from "./demandes/actions";
 import { Icone, type NomIcone } from "./icone";
-import { DecorBandeau, VaguesAccueil } from "./illustrations";
+import { DecorBandeau } from "./illustrations";
 import { Avatar, PastilleCategorie, VignetteCategorie } from "./ui";
 import { TYPES, type CategorieAnnonce, type TypeAnnonce } from "@/lib/annonces/valider";
 import { meilleuresCorrespondances } from "@/lib/annonces/correspondance";
@@ -44,72 +44,95 @@ function ilYa(date: string) {
 
 async function Accueil() {
   const supabase = await createClient();
-  const { data } = await supabase.rpc("annonces_apercu");
+  const [{ data }, { data: nombre }] = await Promise.all([
+    supabase.rpc("annonces_apercu"),
+    supabase.rpc("nombre_annonces_actives"),
+  ]);
   const apercu = (data ?? []) as AnnonceApercu[];
+  const nombreAnnonces = typeof nombre === "number" ? nombre : null;
 
   return (
     <main className="flex flex-1 flex-col">
-      {/* Remonte sous la barre du haut (transparente) pour que la vague passe derrière le menu. */}
-      <section className="relative -mt-18 overflow-hidden pt-18">
-        <VaguesAccueil />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-4 pt-10 pb-24 sm:px-6 lg:grid-cols-[1fr_1fr] lg:pt-14 lg:pb-32">
-          <div className="flex flex-col gap-5">
-            <span className="self-start rounded-full bg-white px-3.5 py-2 text-xs font-extrabold text-violet shadow-sm sm:text-sm">
-              Pour les étudiants de l&apos;ESP · 6 campus
-            </span>
-            <div className="relative mt-2 self-start">
-              <h1 className="titre text-5xl leading-none text-indigo uppercase sm:text-7xl sm:whitespace-nowrap">
-                L&apos;ESP qui
+      {/* Accueil « version pro » (maquette validée le 19 nov) : texte à gauche, scène 3D à droite, bandes qui défilent. */}
+      <section className="relative overflow-hidden bg-[radial-gradient(1200px_600px_at_85%_15%,#f3e3fb_0%,transparent_60%)]">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-8 pb-16 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:pt-12 lg:pb-20">
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-4">
+              <span className="flex items-center rounded-2xl bg-white px-5 py-3.5 shadow-[0_10px_26px_rgb(63_34_110/0.12)]">
+                <Image src="/esp-logo-nouveau.png" alt="ESP" width={986} height={441} priority sizes="120px" className="h-9 w-auto sm:h-11" />
+              </span>
+              <span className="text-sm leading-snug font-bold text-gray-600">
+                Le site d&apos;entraide
                 <br />
-                s&apos;entraide
-              </h1>
-              <span className="absolute -top-1 -right-24 hidden h-[78px] w-[78px] items-center justify-center rounded-full bg-or text-center text-sm leading-tight font-extrabold text-encre shadow-md sm:flex">
-                6
-                <br />
-                campus
+                des étudiants des 6 campus
               </span>
             </div>
-            <div>
-              <p className="max-w-md text-lg leading-relaxed text-gray-700">
-                Propose ce que tu sais faire, trouve ce dont tu as besoin, entre étudiants de ton campus.
-              </p>
-              <p className="mt-2 text-sm text-gris">Photo · Vidéo · Dev · Coloc · Covoiturage · Objets</p>
-            </div>
+            <h1 className="titre text-5xl leading-[0.98] tracking-[-0.045em] sm:text-7xl">
+              L&apos;entraide
+              <br />
+              entre étudiants
+              <br />
+              de <span className="bg-gradient-to-r from-violet to-rose bg-clip-text text-transparent">l&apos;ESP.</span>
+            </h1>
+            <p className="max-w-lg text-lg leading-relaxed text-gray-600">
+              Photo, vidéo, dev, coloc, covoiturage… Propose ce que tu sais faire, trouve qui peut t&apos;aider sur ton campus.
+            </p>
             <div className="flex flex-wrap items-center gap-3">
-              <Link href="/inscription" className="bouton bouton-principal px-7">
-                Créer mon compte ESP
+              <Link href="/inscription" className="bouton bouton-principal px-7 py-3.5 text-base">
+                Créer mon compte ESP →
               </Link>
-              <Link href="/connexion" className="bouton font-bold text-indigo hover:bg-white/60">
-                Se connecter →
-              </Link>
+              <a href="#annonces" className="bouton bouton-contour px-6 py-3.5 text-base">
+                Voir les annonces
+              </a>
             </div>
             <p className="-mt-2 text-sm text-gris">
               Avec ton adresse <span className="whitespace-nowrap">@mail-esp.com</span> ou{" "}
               <span className="whitespace-nowrap">@mail-esd.com</span>
             </p>
+            <dl className="mt-2 flex flex-wrap gap-x-9 gap-y-3">
+              {nombreAnnonces !== null && <ChiffreAccueil libelle="annonces en ligne" valeur={String(nombreAnnonces)} />}
+              <ChiffreAccueil libelle="campus ESP" valeur={String(CAMPUS.length)} />
+              <ChiffreAccueil libelle="coordonnées protégées" valeur="100 %" />
+            </dl>
           </div>
-          {/* Le logo de l'école (nouvelle identité « ESP. ») à la place de l'illustration. */}
-          <div className="relative mx-auto w-full max-w-md">
-            <span className="absolute -top-4 left-6 z-10 h-10 w-10 rotate-12 rounded-xl bg-or" aria-hidden="true" />
-            <span className="absolute right-8 -bottom-3 z-10 h-8 w-8 rounded-full bg-rose" aria-hidden="true" />
-            <div className="carte relative mx-auto flex max-w-md -rotate-2 flex-col items-center gap-6 px-10 py-12 sm:px-14 sm:py-16">
-              <Image
-                src="/esp-logo-nouveau.png"
-                alt="ESP"
-                width={986}
-                height={441}
-                priority
-                sizes="(min-width: 1024px) 340px, 80vw"
-                className="h-auto w-full"
-              />
-              <p className="text-center text-sm font-semibold text-gris">{CAMPUS.join(" · ")}</p>
-            </div>
-          </div>
+          <SceneAnnonces />
         </div>
       </section>
 
+      {/* Deux bandes qui défilent (décoratives : le même texte est lisible plus bas dans la page). */}
+      <div aria-hidden="true" className="relative -mx-6 mb-12 overflow-hidden py-3 select-none">
+        <div className="-rotate-2 bg-encre py-3.5 text-white">
+          <div className="defile flex w-max">
+            {[0, 1].map((n) => (
+              <span key={n} className="flex">
+                {["Photo", "Vidéo", "Dev", "Community management", "Coloc", "Covoiturage", "Objets"].map((mot) => (
+                  <span key={mot} className="flex items-center text-2xl font-extrabold sm:text-3xl">
+                    <span className="px-5">{mot}</span>
+                    <span className="text-or">✦</span>
+                  </span>
+                ))}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="mt-3 rotate-[1.5deg] bg-violet py-2.5 text-white">
+          <div className="defile-inverse flex w-max">
+            {[0, 1].map((n) => (
+              <span key={n} className="flex">
+                {CAMPUS.map((c) => (
+                  <span key={c} className="flex items-center text-lg font-extrabold sm:text-xl">
+                    <span className="px-5">ESP {c}</span>
+                    <span className="text-or">●</span>
+                  </span>
+                ))}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {apercu.length > 0 && (
-        <section className="mx-auto w-full max-w-6xl px-4 pt-4 pb-10 sm:px-6">
+        <section id="annonces" className="mx-auto w-full max-w-6xl scroll-mt-6 px-4 pt-4 pb-10 sm:px-6">
           <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-sm font-bold tracking-wider text-violet uppercase">En ce moment</p>
@@ -204,6 +227,66 @@ async function Accueil() {
         </div>
       </footer>
     </main>
+  );
+}
+
+function ChiffreAccueil({ valeur, libelle }: { valeur: string; libelle: string }) {
+  return (
+    <div>
+      <dt className="sr-only">{libelle}</dt>
+      <dd className="text-3xl font-extrabold">{valeur}</dd>
+      <dd className="text-sm font-semibold text-gris" aria-hidden="true">
+        {libelle}
+      </dd>
+    </div>
+  );
+}
+
+// Décor de l'accueil : des cartes du site inclinées en 3D qui flottent (grand écran seulement).
+function SceneAnnonces() {
+  const carte = "absolute rounded-[22px] bg-white p-4 shadow-[0_30px_60px_rgb(63_34_110/0.28),0_6px_14px_rgb(63_34_110/0.12)]";
+  return (
+    <div aria-hidden="true" className="scene-3d relative hidden h-[480px] select-none lg:block">
+      <div className="absolute top-12 left-14 h-80 w-80 rounded-full bg-[radial-gradient(circle_at_35%_35%,#c7aee0,#8e66b8)] opacity-55 blur-[2px]" />
+      <div className={`${carte} flotte-1 top-6 left-0 w-[300px]`}>
+        <div className="flex items-center gap-3">
+          <VignetteCategorie categorie="photo" taille={44} />
+          <div>
+            <p className="font-bold">Shooting portrait pour ton book</p>
+            <p className="mt-1 flex gap-1.5">
+              <PastilleCategorie categorie="photo" />
+              <span className="rounded-full bg-violet/10 px-2 py-0.5 text-xs font-bold text-violet">ESP Lyon</span>
+            </p>
+          </div>
+        </div>
+        <div className="mt-3 flex items-center justify-between border-t border-ligne pt-3">
+          <span className="text-xs text-gris">Léa · Photographie</span>
+          <span className="rounded-full bg-rose px-3 py-1.5 text-xs font-bold text-white">Demander le contact</span>
+        </div>
+      </div>
+      <div className={`${carte} flotte-2 top-48 left-44 w-[290px]`}>
+        <div className="flex items-center gap-3">
+          <VignetteCategorie categorie="dev" taille={44} />
+          <div>
+            <p className="font-bold">Aide sur mon site React</p>
+            <p className="mt-1 flex gap-1.5">
+              <PastilleCategorie categorie="dev" />
+              <span className="rounded-full bg-violet/10 px-2 py-0.5 text-xs font-bold text-violet">ESP Paris</span>
+            </p>
+          </div>
+        </div>
+        <p className="mt-3 rounded-xl bg-violet/10 px-3 py-2 text-xs font-bold text-indigo">Tu peux aider ! Ça correspond à tes compétences.</p>
+      </div>
+      <div className={`${carte} flotte-3 top-[350px] left-8 flex w-[270px] items-center gap-3`}>
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-succes/15 text-succes">
+          <Icone nom="cadenasOuvert" taille={18} />
+        </span>
+        <div>
+          <p className="text-sm font-bold">Sam a accepté ta demande</p>
+          <p className="text-xs font-bold text-succes">Coordonnées débloquées</p>
+        </div>
+      </div>
+    </div>
   );
 }
 

@@ -12,22 +12,24 @@ export async function EnTete() {
 
   if (!user) {
     return (
-      // Transparente et haute de 4,5 rem : sur l'accueil, la vague violette passe derrière.
+      // Barre du haut des visiteurs, épurée comme sur la maquette « version pro » (19 nov).
       <header className="relative z-30 h-18">
-        {/* Toute la largeur : les boutons restent à droite, sur la vague violette, même sur un grand écran. */}
-        <div className="flex h-full items-center justify-between gap-3 px-4 sm:px-6 lg:px-10">
+        <div className="mx-auto flex h-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
           <Logo />
-          <nav className="flex items-center gap-2">
-            <Link href="/#campus" className="bouton bouton-contour hidden lg:inline-flex">
-              Les campus
-            </Link>
-            <Link href="/#comment" className="bouton bouton-contour hidden lg:inline-flex">
-              Comment ça marche
-            </Link>
-            <Link href="/connexion" className="bouton bouton-contour">
+          <nav className="flex items-center gap-1 sm:gap-2">
+            {[
+              { href: "/#annonces", libelle: "Annonces" },
+              { href: "/#campus", libelle: "Les campus" },
+              { href: "/#comment", libelle: "Comment ça marche" },
+            ].map((l) => (
+              <Link key={l.href} href={l.href} className="hidden rounded-full px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-white/70 hover:text-encre lg:inline-flex">
+                {l.libelle}
+              </Link>
+            ))}
+            <Link href="/connexion" className="rounded-full px-3 py-2 text-sm font-bold text-encre hover:bg-white/70">
               Connexion
             </Link>
-            <Link href="/inscription" className="bouton bouton-principal hidden sm:inline-flex">
+            <Link href="/inscription" className="bouton hidden bg-encre px-5 text-white hover:bg-encre/90 sm:inline-flex">
               Créer mon compte
             </Link>
           </nav>

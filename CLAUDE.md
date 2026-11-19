@@ -46,7 +46,10 @@
   (`src/lib/annonces/style-categories.ts`). Icônes maison au trait (`src/app/icone.tsx`), pas d'emoji.
 - Navigation : connecté, barre verticale violette à gauche sur ordinateur (≥ 1024 px, bouton « Publier » rose) ;
   barre d'onglets en bas sur téléphone et tablette. Pas connecté : barre du haut transparente (la vague passe derrière).
-- Refusés : bleu marine (remplacé), illustrations 3D / emojis.
+- Accueil « version pro » (19 nov, retour du prof) : logo officiel « ESP. » dans son propre cadre (jamais mêlé aux
+  annonces, `public/esp-logo-nouveau.png`), grand titre, chiffres réels, scène 3D de cartes qui flottent (CSS, grand écran),
+  2 bandes de texte qui défilent ; animations coupées si « réduire les animations » (`globals.css`).
+- Refusés : bleu marine (remplacé), illustrations 3D façon emojis.
 - Composants communs : `src/app/ui.tsx` (Avatar, PastilleCategorie, VignetteCategorie, TitrePage, EtatVide).
 
 ## Outils
@@ -61,6 +64,7 @@ Limite connue : sans confirmation par e-mail, on ne prouve pas que la personne p
 Un visiteur non connecté voit sur l'accueil les 6 dernières annonces actives : titre, catégorie, type, prix, campus, date.
 Seulement via la fonction `annonces_apercu()` (security definer, colonnes choisies) ; la table `annonces` reste fermée
 aux visiteurs. Jamais l'auteur, la description, les compétences ni les coordonnées (tests `apercu-annonces.test.mjs`).
+Le nombre d'annonces actives passe aussi par une fonction limitée : `nombre_annonces_actives()` (un nombre, rien d'autre).
 
 ## Humaniser (19 nov)
 - Photo de profil facultative : redessinée en 400 × 400 dans le navigateur (plus de GPS ni d'infos de l'appareil),
