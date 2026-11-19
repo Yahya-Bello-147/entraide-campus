@@ -3,7 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { repondreDemande } from "./demandes/actions";
 import { Icone, type NomIcone } from "./icone";
-import { DecorBandeau, IllustrationAccueil, VaguesAccueil } from "./illustrations";
+import { DecorBandeau, VaguesAccueil } from "./illustrations";
 import { Avatar, PastilleCategorie, VignetteCategorie } from "./ui";
 import { TYPES, type CategorieAnnonce, type TypeAnnonce } from "@/lib/annonces/valider";
 import { meilleuresCorrespondances } from "@/lib/annonces/correspondance";
@@ -88,7 +88,22 @@ async function Accueil() {
               <span className="whitespace-nowrap">@mail-esd.com</span>
             </p>
           </div>
-          <IllustrationAccueil className="mx-auto w-full max-w-md lg:max-w-none" />
+          {/* Le logo de l'école à la place de l'illustration (demande du 19 nov). */}
+          <div className="relative mx-auto w-full max-w-md">
+            <span className="absolute -top-5 -left-4 h-10 w-10 rotate-12 rounded-xl bg-or" aria-hidden="true" />
+            <span className="absolute -right-3 -bottom-4 h-8 w-8 rounded-full bg-rose" aria-hidden="true" />
+            <div className="carte relative flex -rotate-2 flex-col items-center gap-5 px-8 py-10 sm:px-12 sm:py-14">
+              <Image
+                src="/esp-logo.png"
+                alt="ESP, École supérieure de publicité"
+                width={230}
+                height={84}
+                priority
+                className="h-auto w-full max-w-[300px]"
+              />
+              <p className="text-center text-sm font-semibold text-gris">{CAMPUS.join(" · ")}</p>
+            </div>
+          </div>
         </div>
       </section>
 
