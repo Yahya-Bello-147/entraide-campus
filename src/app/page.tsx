@@ -499,7 +499,7 @@ async function TableauDeBord({ userId }: { userId: string }) {
       <section className="mx-auto w-full max-w-6xl px-4 pb-8 sm:px-6">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-extrabold">
-            Annonces récentes{deMonCampus.length > 0 ? ` · à ${campus}` : ""}
+            Annonces récentes des autres étudiants{deMonCampus.length > 0 ? ` · à ${campus}` : ""}
           </h2>
           <Link href="/annonces" className="text-sm font-semibold text-indigo">
             Toutes les annonces
