@@ -90,18 +90,18 @@ async function Accueil() {
           </div>
           {/* Le logo de l'école à la place de l'illustration (demande du 19 nov). */}
           <div className="relative mx-auto w-full max-w-md">
-            <span className="absolute -top-5 -left-4 h-10 w-10 rotate-12 rounded-xl bg-or" aria-hidden="true" />
-            <span className="absolute -right-3 -bottom-4 h-8 w-8 rounded-full bg-rose" aria-hidden="true" />
-            <div className="carte relative flex -rotate-2 flex-col items-center gap-5 px-8 py-10 sm:px-12 sm:py-14">
+            <span className="absolute -top-4 left-6 z-10 h-10 w-10 rotate-12 rounded-xl bg-or" aria-hidden="true" />
+            <span className="absolute right-8 -bottom-3 z-10 h-8 w-8 rounded-full bg-rose" aria-hidden="true" />
+            <div className="relative mx-auto max-w-sm -rotate-2 overflow-hidden rounded-[2rem] border-[6px] border-white shadow-[0_18px_40px_rgb(142_102_184/0.3)]">
               <Image
-                src="/esp-logo.png"
+                src="/esp-logo.jpg"
                 alt="ESP, École supérieure de publicité"
-                width={230}
-                height={84}
+                width={540}
+                height={540}
                 priority
-                className="h-auto w-full max-w-[300px]"
+                sizes="(min-width: 1024px) 384px, 90vw"
+                className="h-auto w-full"
               />
-              <p className="text-center text-sm font-semibold text-gris">{CAMPUS.join(" · ")}</p>
             </div>
           </div>
         </div>
