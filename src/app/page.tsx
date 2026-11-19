@@ -88,20 +88,21 @@ async function Accueil() {
               <span className="whitespace-nowrap">@mail-esd.com</span>
             </p>
           </div>
-          {/* Le logo de l'école à la place de l'illustration (demande du 19 nov). */}
+          {/* Le logo de l'école (nouvelle identité « ESP. ») à la place de l'illustration. */}
           <div className="relative mx-auto w-full max-w-md">
             <span className="absolute -top-4 left-6 z-10 h-10 w-10 rotate-12 rounded-xl bg-or" aria-hidden="true" />
             <span className="absolute right-8 -bottom-3 z-10 h-8 w-8 rounded-full bg-rose" aria-hidden="true" />
-            <div className="relative mx-auto max-w-sm -rotate-2 overflow-hidden rounded-[2rem] border-[6px] border-white shadow-[0_18px_40px_rgb(142_102_184/0.3)]">
+            <div className="carte relative mx-auto flex max-w-md -rotate-2 flex-col items-center gap-6 px-10 py-12 sm:px-14 sm:py-16">
               <Image
-                src="/esp-logo.jpg"
-                alt="ESP, École supérieure de publicité"
-                width={540}
-                height={540}
+                src="/esp-logo-nouveau.png"
+                alt="ESP"
+                width={986}
+                height={441}
                 priority
-                sizes="(min-width: 1024px) 384px, 90vw"
+                sizes="(min-width: 1024px) 340px, 80vw"
                 className="h-auto w-full"
               />
+              <p className="text-center text-sm font-semibold text-gris">{CAMPUS.join(" · ")}</p>
             </div>
           </div>
         </div>
