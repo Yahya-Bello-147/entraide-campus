@@ -24,7 +24,7 @@ export async function ListeConversations({ userId, actifId }: { userId: string; 
   const autres = demandes.map((d) => (d.demandeur_id === userId ? d.destinataire_id : d.demandeur_id));
   const ids = demandes.map((d) => d.id);
   const [{ data: profils }, { data: messages }] = await Promise.all([
-    supabase.from("profils").select("id, prenom").in("id", autres),
+    supabase.from("profils").select("id, prenom, photo").in("id", autres),
     supabase
       .from("messages")
       .select("demande_id, contenu, auteur_id, created_at")
@@ -33,6 +33,7 @@ export async function ListeConversations({ userId, actifId }: { userId: string; 
       .limit(500),
   ]);
   const prenom = new Map((profils ?? []).map((p) => [p.id as string, p.prenom as string]));
+  const photo = new Map((profils ?? []).map((p) => [p.id as string, p.photo as string | null]));
   const dernier = new Map<string, { contenu: string; auteur_id: string; created_at: string }>();
   for (const m of messages ?? []) if (!dernier.has(m.demande_id)) dernier.set(m.demande_id, m);
 
@@ -51,7 +52,8 @@ export async function ListeConversations({ userId, actifId }: { userId: string; 
   return (
     <ul className="flex flex-col p-2">
       {demandes.map((d) => {
-        const autre = prenom.get(d.demandeur_id === userId ? d.destinataire_id : d.demandeur_id);
+        const autreId = d.demandeur_id === userId ? d.destinataire_id : d.demandeur_id;
+        const autre = prenom.get(autreId);
         const m = dernier.get(d.id);
         const actif = d.id === actifId;
         return (
@@ -61,7 +63,7 @@ export async function ListeConversations({ userId, actifId }: { userId: string; 
               aria-current={actif ? "page" : undefined}
               className={`flex items-center gap-3 rounded-2xl px-3 py-3 transition ${actif ? "bg-violet/10" : "hover:bg-black/[0.03]"}`}
             >
-              <Avatar prenom={autre} taille={44} />
+              <Avatar prenom={autre} photo={photo.get(autreId)} taille={44} />
               <span className="min-w-0 flex-1">
                 <span className="flex items-center justify-between gap-2">
                   <span className="truncate font-bold">{autre ?? "Conversation"}</span>

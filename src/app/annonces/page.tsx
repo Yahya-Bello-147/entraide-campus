@@ -86,10 +86,11 @@ export default async function PageAnnonces({
   // Prénom des auteurs + mes demandes déjà envoyées (pour afficher leur statut sur la carte).
   const auteurs = [...new Set(annonces.map((a) => a.auteur_id))];
   const [{ data: profils }, { data: mesDemandes }] = await Promise.all([
-    supabase.from("profils").select("id, prenom, competences, campus").in("id", auteurs),
+    supabase.from("profils").select("id, prenom, competences, campus, photo").in("id", auteurs),
     supabase.from("demandes_contact").select("annonce_id, statut").eq("demandeur_id", user.id),
   ]);
   const prenom = new Map((profils ?? []).map((p) => [p.id as string, p.prenom as string]));
+  const photoAuteur = new Map((profils ?? []).map((p) => [p.id as string, p.photo as string | null]));
   const campusAuteur = new Map((profils ?? []).map((p) => [p.id as string, p.campus as string | null]));
   // Les 2 premières compétences validées de l'auteur (profil IA), affichées sur la carte.
   const competences = new Map(
@@ -283,9 +284,11 @@ export default async function PageAnnonces({
 
               <div className="relative z-10 mt-4 flex items-center justify-between gap-3 border-t border-ligne pt-3">
                 <span className="flex min-w-0 items-center gap-2 text-sm text-gray-600">
-                  <Avatar prenom={prenom.get(annonce.auteur_id)} taille={26} />
+                  <Avatar prenom={prenom.get(annonce.auteur_id)} photo={photoAuteur.get(annonce.auteur_id)} taille={26} />
                   <span className="min-w-0 truncate">
-                    <span className="font-semibold text-encre">{prenom.get(annonce.auteur_id) ?? "Un étudiant"}</span>
+                    <Link href={`/etudiants/${annonce.auteur_id}`} className="font-semibold text-indigo hover:underline">
+                      {prenom.get(annonce.auteur_id) ?? "Un étudiant"}
+                    </Link>
                     {(competences.get(annonce.auteur_id) ?? []).length > 0 && (
                       <span className="text-gris"> · {(competences.get(annonce.auteur_id) ?? []).join(", ")}</span>
                     )}

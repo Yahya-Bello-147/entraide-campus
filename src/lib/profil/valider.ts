@@ -1,9 +1,16 @@
 // Vérifie et nettoie le formulaire « Mon profil ». Mêmes limites que dans la base.
 import { CAMPUS, type Campus } from "../campus.ts";
+import { detecterCoordonneesEvidentes } from "../annonces/coordonnees-evidentes.ts";
 
-export type ChampsProfil = Record<"prenom" | "email" | "telephone" | "campus", string>;
+export type ChampsProfil = Record<"prenom" | "email" | "telephone" | "campus" | "presentation", string>;
 
-export type ProfilValide = { prenom: string; email: string; telephone: string | null; campus: Campus };
+export type ProfilValide = {
+  prenom: string;
+  email: string;
+  telephone: string | null;
+  campus: Campus;
+  presentation: string | null;
+};
 
 export type ResultatProfil = { ok: true; profil: ProfilValide } | { ok: false; erreur: string };
 
@@ -29,5 +36,18 @@ export function validerProfil(champs: ChampsProfil): ResultatProfil {
     return { ok: false, erreur: "Choisis ton campus ESP." };
   }
 
-  return { ok: true, profil: { prenom, email, telephone: telephone || null, campus } };
+  // La présentation est visible par les autres étudiants : courte, et sans coordonnées (règle d'or n°1).
+  const presentation = (champs.presentation ?? "").trim().replace(/\s+/g, " ");
+  if (presentation.length > 160) {
+    return { ok: false, erreur: "Ta présentation doit faire 160 caractères maximum." };
+  }
+  const coordonnee = detecterCoordonneesEvidentes(presentation)[0];
+  if (coordonnee) {
+    return {
+      ok: false,
+      erreur: `Ta présentation contient un ${coordonnee.type} (« ${coordonnee.extrait} ») : tes coordonnées ne se partagent qu'après accord.`,
+    };
+  }
+
+  return { ok: true, profil: { prenom, email, telephone: telephone || null, campus, presentation: presentation || null } };
 }

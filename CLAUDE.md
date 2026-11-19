@@ -62,6 +62,14 @@ Un visiteur non connecté voit sur l'accueil les 6 dernières annonces actives :
 Seulement via la fonction `annonces_apercu()` (security definer, colonnes choisies) ; la table `annonces` reste fermée
 aux visiteurs. Jamais l'auteur, la description, les compétences ni les coordonnées (tests `apercu-annonces.test.mjs`).
 
+## Humaniser (19 nov)
+- Photo de profil facultative : redessinée en 400 × 400 dans le navigateur (plus de GPS ni d'infos de l'appareil),
+  contenu revérifié côté serveur (`src/lib/profil/photo.ts`), espace Supabase « photos » (2 Mo, images seulement,
+  chacun ne gère que SON dossier ; lecture par lien). Colonne `profils.photo`.
+- Présentation (160 caractères, sans coordonnées : même contrôle que les annonces). Colonne `profils.presentation`.
+- Page profil d'un étudiant `/etudiants/[id]` (connectés seulement) : photo, campus, présentation, compétences,
+  annonces actives. Jamais ses coordonnées. Le prénom est un lien vers cette page (annonces, demandes, messages).
+
 ## Les 3 règles d'or (toujours vraies, protégées dans la base avec la RLS)
 1. Mes coordonnées ne sont visibles qu'après mon accord.
 2. Je ne peux modifier que mes propres annonces.

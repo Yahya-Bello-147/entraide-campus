@@ -28,7 +28,7 @@ export default async function PageConversation({ params }: { params: Promise<{ i
 
   const autreId = demande.demandeur_id === user.id ? demande.destinataire_id : demande.demandeur_id;
   const [{ data: profil }, { data: messages }] = await Promise.all([
-    supabase.from("profils").select("prenom").eq("id", autreId).maybeSingle(),
+    supabase.from("profils").select("prenom, photo").eq("id", autreId).maybeSingle(),
     supabase
       .from("messages")
       .select("id, auteur_id, contenu, created_at")
@@ -51,9 +51,13 @@ export default async function PageConversation({ params }: { params: Promise<{ i
             <Link href="/messages" aria-label="Toutes mes conversations" className="flex h-10 w-10 items-center justify-center rounded-xl text-gris hover:bg-black/5 md:hidden">
               <Icone nom="retour" taille={22} />
             </Link>
-            <Avatar prenom={prenom} taille={42} />
+            <Avatar prenom={prenom} photo={profil?.photo as string | null | undefined} taille={42} />
             <div className="min-w-0 flex-1">
-              <h1 className="truncate text-lg font-extrabold">{prenom}</h1>
+              <h1 className="truncate text-lg font-extrabold">
+                <Link href={`/etudiants/${autreId}`} className="hover:underline">
+                  {prenom}
+                </Link>
+              </h1>
               <Link href={`/annonces/${demande.annonce_id}`} className="block truncate text-xs font-semibold text-violet hover:underline">
                 À propos de « {titre} »
               </Link>

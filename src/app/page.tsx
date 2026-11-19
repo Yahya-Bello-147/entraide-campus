@@ -289,9 +289,10 @@ async function TableauDeBord({ userId }: { userId: string }) {
     ]),
   ];
   const { data: profils } = ids.length
-    ? await supabase.from("profils").select("id, prenom, campus").in("id", ids)
+    ? await supabase.from("profils").select("id, prenom, campus, photo").in("id", ids)
     : { data: [] };
   const prenomDe = new Map((profils ?? []).map((p) => [p.id as string, p.prenom as string]));
+  const photoDe = new Map((profils ?? []).map((p) => [p.id as string, p.photo as string | null]));
 
   const actives = (mesAnnonces ?? []).filter((a) => a.statut === "active").length;
   const pourvues = (mesAnnonces ?? []).filter((a) => a.statut === "pourvue").length;
@@ -368,7 +369,7 @@ async function TableauDeBord({ userId }: { userId: string }) {
                 {demandes.map((d) => (
                   <li key={d.id} className="flex flex-col gap-3">
                     <div className="flex items-center gap-3">
-                      <Avatar prenom={prenomDe.get(d.demandeur_id)} taille={40} />
+                      <Avatar prenom={prenomDe.get(d.demandeur_id)} photo={photoDe.get(d.demandeur_id)} taille={40} />
                       <p className="text-sm text-gray-700">
                         <b className="text-encre">{prenomDe.get(d.demandeur_id) ?? "Quelqu'un"}</b> veut te contacter pour «{" "}
                         {d.annonces?.titre ?? "ton annonce"} »
@@ -408,7 +409,7 @@ async function TableauDeBord({ userId }: { userId: string }) {
                         href={`/messages/${m.demande_id}`}
                         className="-mx-2 flex items-center gap-3 rounded-2xl px-2 py-2.5 hover:bg-black/[0.03]"
                       >
-                        <Avatar prenom={autre} taille={42} />
+                        <Avatar prenom={autre} photo={photoDe.get(autreDe.get(m.demande_id)!)} taille={42} />
                         <span className="min-w-0 flex-1">
                           <span className="block font-bold">{autre ?? "Conversation"}</span>
                           <span className="block truncate text-sm text-gris">{m.contenu}</span>

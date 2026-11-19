@@ -43,8 +43,14 @@ export async function EnTete() {
       .select("id", { count: "exact", head: true })
       .eq("destinataire_id", user.id)
       .eq("statut", "en_attente"),
-    supabase.from("profils").select("prenom").eq("id", user.id).maybeSingle(),
+    supabase.from("profils").select("prenom, photo").eq("id", user.id).maybeSingle(),
   ]);
 
-  return <Navigation demandesEnAttente={count ?? 0} prenom={(profil?.prenom as string | undefined) ?? null} />;
+  return (
+    <Navigation
+      demandesEnAttente={count ?? 0}
+      prenom={(profil?.prenom as string | undefined) ?? null}
+      photo={(profil?.photo as string | null | undefined) ?? null}
+    />
+  );
 }

@@ -5,6 +5,7 @@ import { DecorBandeau } from "@/app/illustrations";
 import { Icone } from "@/app/icone";
 import { Avatar } from "@/app/ui";
 import { FormulaireProfil } from "./formulaire-profil";
+import { PhotoProfil } from "./photo-profil";
 import { ProfilIA } from "./profil-ia";
 
 export default async function PageProfil({
@@ -19,12 +20,13 @@ export default async function PageProfil({
   if (!user) redirect("/connexion");
 
   const [{ data: profil }, { data: coordonnees }, { raison }] = await Promise.all([
-    supabase.from("profils").select("prenom, competences, campus").eq("id", user.id).maybeSingle(),
+    supabase.from("profils").select("prenom, competences, campus, presentation, photo").eq("id", user.id).maybeSingle(),
     supabase.from("coordonnees").select("email, telephone").eq("user_id", user.id).maybeSingle(),
     searchParams,
   ]);
   const prenom = (profil?.prenom as string | undefined) ?? null;
   const campus = (profil?.campus as string | null | undefined) ?? null;
+  const photo = (profil?.photo as string | null | undefined) ?? null;
 
   return (
     <main className="flex flex-1 flex-col">
@@ -32,7 +34,7 @@ export default async function PageProfil({
         <DecorBandeau />
         <div className="relative mx-auto flex max-w-5xl items-center gap-4 px-4 pt-8 pb-12 sm:px-6">
           <span className="rounded-full border-2 border-white/40 p-1">
-            <Avatar prenom={prenom} taille={64} />
+            <Avatar prenom={prenom} photo={photo} taille={64} />
           </span>
           <div className="min-w-0 flex-1">
             <h1 className="titre truncate text-3xl">{prenom ?? "Mon profil"}</h1>
@@ -60,12 +62,16 @@ export default async function PageProfil({
           )}
           <section className="carte p-5 sm:p-6">
             <h2 className="mb-4 text-lg font-extrabold">Mes informations</h2>
+            <div className="mb-5 border-b border-ligne pb-5">
+              <PhotoProfil prenom={prenom} photo={photo} />
+            </div>
             <FormulaireProfil
               initial={{
                 prenom: profil?.prenom ?? "",
                 email: coordonnees?.email ?? user.email ?? "",
                 telephone: coordonnees?.telephone ?? "",
                 campus: campus ?? "",
+                presentation: (profil?.presentation as string | null | undefined) ?? "",
               }}
             />
           </section>

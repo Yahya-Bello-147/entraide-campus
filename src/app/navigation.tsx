@@ -26,7 +26,15 @@ function Pastille({ nombre }: { nombre?: number }) {
 
 // Menu des personnes connectées : barre violette verticale à gauche sur ordinateur,
 // petite barre en haut + barre d'onglets en bas sur téléphone et tablette.
-export function Navigation({ demandesEnAttente, prenom }: { demandesEnAttente: number; prenom: string | null }) {
+export function Navigation({
+  demandesEnAttente,
+  prenom,
+  photo,
+}: {
+  demandesEnAttente: number;
+  prenom: string | null;
+  photo: string | null;
+}) {
   const chemin = usePathname();
   const liens: Lien[] = [
     { href: "/", libelle: "Accueil", icone: "accueil" },
@@ -86,7 +94,7 @@ export function Navigation({ demandesEnAttente, prenom }: { demandesEnAttente: n
             }`}
           >
             <span className="rounded-full bg-white p-0.5">
-              <Avatar prenom={prenom} taille={36} />
+              <Avatar prenom={prenom} photo={photo} taille={36} />
             </span>
             <span className="flex min-w-0 flex-col leading-tight">
               <span className="truncate font-bold">{prenom ?? "Mon compte"}</span>
@@ -122,7 +130,7 @@ export function Navigation({ demandesEnAttente, prenom }: { demandesEnAttente: n
               aria-label="Mon profil"
               className={`rounded-full p-0.5 ${profilActif ? "ring-2 ring-violet" : ""}`}
             >
-              <Avatar prenom={prenom} taille={36} />
+              <Avatar prenom={prenom} photo={photo} taille={36} />
             </Link>
           </div>
         </div>

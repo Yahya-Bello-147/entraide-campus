@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Icone } from "./icone";
 import { STYLE_CATEGORIES } from "@/lib/annonces/style-categories";
 import { CATEGORIES, type CategorieAnnonce } from "@/lib/annonces/valider";
+import { urlPhoto } from "@/lib/profil/photo";
 
 // Couleurs d'avatar, choisies d'après le prénom (toujours la même pour une personne).
 const COULEURS_AVATAR = [
@@ -12,7 +13,23 @@ const COULEURS_AVATAR = [
   { background: "#ffedd5", color: "#9a3412" },
 ];
 
-export function Avatar({ prenom, taille = 36 }: { prenom?: string | null; taille?: number }) {
+// La photo de profil si la personne en a mis une, sinon son initiale sur une couleur.
+export function Avatar({ prenom, photo, taille = 36 }: { prenom?: string | null; photo?: string | null; taille?: number }) {
+  const url = urlPhoto(photo);
+  if (url) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- photo déjà réduite à 400 × 400 avant l'envoi
+      <img
+        src={url}
+        alt=""
+        width={taille}
+        height={taille}
+        loading="lazy"
+        className="shrink-0 rounded-full bg-violet/10 object-cover"
+        style={{ width: taille, height: taille }}
+      />
+    );
+  }
   const nom = (prenom ?? "").trim() || "?";
   const index = [...nom].reduce((somme, c) => somme + c.charCodeAt(0), 0) % COULEURS_AVATAR.length;
   return (

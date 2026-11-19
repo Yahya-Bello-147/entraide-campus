@@ -19,6 +19,21 @@ export function FormulaireProfil({ initial }: { initial: ChampsProfil }) {
         <input name="prenom" defaultValue={v.prenom} required maxLength={50} autoComplete="given-name" className="champ" />
       </label>
 
+      <label className="etiquette">
+        <span>
+          Ma présentation <span className="font-normal text-gris">(facultative, visible sur ta page profil)</span>
+        </span>
+        <textarea
+          name="presentation"
+          defaultValue={v.presentation}
+          maxLength={160}
+          rows={3}
+          placeholder="Ex. : Étudiante en 2e année de communication, passionnée de photo."
+          className="champ resize-none"
+        />
+        <span className="text-xs font-normal text-gris">160 caractères maximum, sans numéro ni lien.</span>
+      </label>
+
       <fieldset className="flex flex-col gap-2">
         <legend className="etiquette mb-2">
           <span>

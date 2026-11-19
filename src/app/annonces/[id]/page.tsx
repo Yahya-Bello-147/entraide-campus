@@ -34,7 +34,7 @@ export default async function PageAnnonce({ params }: { params: Promise<{ id: st
   const estAuteur = annonce.auteur_id === user.id;
   const pourvue = annonce.statut === "pourvue";
   const [{ data: profil }, { data: maDemande }] = await Promise.all([
-    supabase.from("profils").select("prenom, competences").eq("id", annonce.auteur_id).maybeSingle(),
+    supabase.from("profils").select("prenom, competences, photo, campus").eq("id", annonce.auteur_id).maybeSingle(),
     supabase.from("demandes_contact").select("statut").eq("annonce_id", id).eq("demandeur_id", user.id).maybeSingle(),
   ]);
   const libellePourvue = annonce.categorie === "objets" ? "vendue" : "pourvue";
@@ -86,10 +86,14 @@ export default async function PageAnnonce({ params }: { params: Promise<{ id: st
         <aside className="flex min-w-0 flex-col gap-5">
           <div className="carte p-5">
             <div className="flex items-center gap-3">
-              <Avatar prenom={prenom} taille={48} />
+              <Avatar prenom={prenom} photo={profil?.photo as string | null | undefined} taille={48} />
               <div className="min-w-0">
-                <p className="text-xs font-semibold text-gris">Publiée par</p>
-                <p className="truncate text-lg font-bold">{prenom}</p>
+                <p className="text-xs font-semibold text-gris">
+                  Publiée par{profil?.campus ? ` · ESP ${profil.campus}` : ""}
+                </p>
+                <Link href={`/etudiants/${annonce.auteur_id}`} className="block truncate text-lg font-bold text-indigo hover:underline">
+                  {prenom}
+                </Link>
               </div>
             </div>
             {competences.length > 0 && (

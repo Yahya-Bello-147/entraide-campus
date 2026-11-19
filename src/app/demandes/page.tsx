@@ -84,10 +84,11 @@ export default async function PageDemandes() {
   // que si une demande a été acceptée (règle d'or n°1) : rien à filtrer ici.
   const autres = [...new Set(demandes.map((d) => (d.demandeur_id === user.id ? d.destinataire_id : d.demandeur_id)))];
   const [{ data: profils }, { data: coordonnees }] = await Promise.all([
-    supabase.from("profils").select("id, prenom").in("id", autres),
+    supabase.from("profils").select("id, prenom, photo").in("id", autres),
     supabase.from("coordonnees").select("user_id, email, telephone").in("user_id", autres),
   ]);
   const prenomDe = new Map((profils ?? []).map((p) => [p.id as string, p.prenom as string]));
+  const photoDe = new Map((profils ?? []).map((p) => [p.id as string, p.photo as string | null]));
   const coord = new Map(((coordonnees ?? []) as Coordonnees[]).map((c) => [c.user_id, c]));
 
   const recues = demandes.filter((d) => d.destinataire_id === user.id);
@@ -116,10 +117,12 @@ export default async function PageDemandes() {
                 return (
                   <article key={d.id} className="carte p-5">
                     <div className="flex items-start gap-3">
-                      <Avatar prenom={prenom} taille={42} />
+                      <Avatar prenom={prenom} photo={photoDe.get(d.demandeur_id)} taille={42} />
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                          <p className="font-bold">{prenom}</p>
+                          <Link href={`/etudiants/${d.demandeur_id}`} className="font-bold text-indigo hover:underline">
+                            {prenom}
+                          </Link>
                           <Statut statut={d.statut} />
                         </div>
                         <p className="mt-1 text-sm text-gray-600">
@@ -173,10 +176,12 @@ export default async function PageDemandes() {
                 return (
                   <article key={d.id} className="carte p-5">
                     <div className="flex items-start gap-3">
-                      <Avatar prenom={prenom} taille={42} />
+                      <Avatar prenom={prenom} photo={photoDe.get(d.destinataire_id)} taille={42} />
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                          <p className="font-bold">{prenom}</p>
+                          <Link href={`/etudiants/${d.destinataire_id}`} className="font-bold text-indigo hover:underline">
+                            {prenom}
+                          </Link>
                           <Statut statut={d.statut} />
                         </div>
                         <p className="mt-1 text-sm text-gray-600">
