@@ -57,6 +57,11 @@ Seulement les adresses de l'école : @mail-esd.com, @mail-esp.com (étudiants), 
 Vérifié sur la page (`src/lib/auth/domaines.ts`) ET refusé par la base (`supabase/migrations/…_domaines_ecole.sql`).
 Limite connue : sans confirmation par e-mail, on ne prouve pas que la personne possède l'adresse (amélioration prévue).
 
+## Aperçu pour les visiteurs (étape 3, 12 nov)
+Un visiteur non connecté voit sur l'accueil les 6 dernières annonces actives : titre, catégorie, type, prix, campus, date.
+Seulement via la fonction `annonces_apercu()` (security definer, colonnes choisies) ; la table `annonces` reste fermée
+aux visiteurs. Jamais l'auteur, la description, les compétences ni les coordonnées (tests `apercu-annonces.test.mjs`).
+
 ## Les 3 règles d'or (toujours vraies, protégées dans la base avec la RLS)
 1. Mes coordonnées ne sont visibles qu'après mon accord.
 2. Je ne peux modifier que mes propres annonces.

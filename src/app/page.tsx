@@ -5,7 +5,7 @@ import { repondreDemande } from "./demandes/actions";
 import { Icone, type NomIcone } from "./icone";
 import { DecorBandeau, IllustrationAccueil, VaguesAccueil } from "./illustrations";
 import { Avatar, PastilleCategorie, VignetteCategorie } from "./ui";
-import type { CategorieAnnonce } from "@/lib/annonces/valider";
+import { TYPES, type CategorieAnnonce, type TypeAnnonce } from "@/lib/annonces/valider";
 import { meilleuresCorrespondances } from "@/lib/annonces/correspondance";
 import { CAMPUS, photoCampus } from "@/lib/campus";
 
@@ -25,7 +25,28 @@ const ETAPES: { icone: NomIcone; titre: string; texte: string; couleur: string }
   { icone: "cadenas", titre: "Échange en confiance", texte: "Tes coordonnées restent cachées jusqu'à ton accord.", couleur: "#fce7f3" },
 ];
 
-function Accueil() {
+// Étape 3 : ce que voit un visiteur, via la fonction limitée « annonces_apercu » (jamais l'auteur ni la description).
+type AnnonceApercu = {
+  titre: string;
+  categorie: CategorieAnnonce;
+  type: TypeAnnonce;
+  prix: number | null;
+  campus: string | null;
+  created_at: string;
+};
+
+function ilYa(date: string) {
+  const jours = Math.floor((Date.now() - new Date(date).getTime()) / 86_400_000);
+  if (jours <= 0) return "aujourd'hui";
+  if (jours === 1) return "hier";
+  return `il y a ${jours} jours`;
+}
+
+async function Accueil() {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("annonces_apercu");
+  const apercu = (data ?? []) as AnnonceApercu[];
+
   return (
     <main className="flex flex-1 flex-col">
       {/* Remonte sous la barre du haut (transparente) pour que la vague passe derrière le menu. */}
@@ -70,6 +91,50 @@ function Accueil() {
           <IllustrationAccueil className="mx-auto w-full max-w-md lg:max-w-none" />
         </div>
       </section>
+
+      {apercu.length > 0 && (
+        <section className="mx-auto w-full max-w-6xl px-4 pt-4 pb-10 sm:px-6">
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold tracking-wider text-violet uppercase">En ce moment</p>
+              <h2 className="titre mt-1 text-3xl text-indigo sm:text-4xl">Les dernières annonces sur les campus ESP</h2>
+              <p className="mt-2 text-gris">
+                Un aperçu de ce que les étudiants proposent et cherchent. Connecte-toi pour tout voir et contacter.
+              </p>
+            </div>
+            <Link href="/connexion" className="bouton bouton-principal px-6">
+              Voir toutes les annonces
+            </Link>
+          </div>
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {apercu.map((a) => (
+              <li key={`${a.created_at}-${a.titre}`} className="carte flex min-w-0 flex-col gap-3 p-4">
+                <div className="flex items-center gap-3">
+                  <VignetteCategorie categorie={a.categorie} taille={48} />
+                  <p className="min-w-0 font-bold leading-snug break-words">{a.titre}</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <PastilleCategorie categorie={a.categorie} />
+                  <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-700">{TYPES[a.type]}</span>
+                  {a.prix !== null && (
+                    <span className="rounded-full bg-indigo/10 px-2.5 py-1 text-xs font-bold text-indigo">{formatPrix.format(a.prix)}</span>
+                  )}
+                  {a.campus && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-violet/10 px-2.5 py-1 text-xs font-bold text-violet">
+                      <Icone nom="epingle" taille={12} />
+                      ESP {a.campus}
+                    </span>
+                  )}
+                </div>
+                <p className="mt-auto flex items-center gap-2 border-t border-ligne pt-3 text-sm text-gris">
+                  <span className="h-6 w-6 rounded-full bg-gray-200" aria-hidden="true" />
+                  Un étudiant de l&apos;ESP · {ilYa(a.created_at)}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section id="campus" className="mx-auto w-full max-w-6xl scroll-mt-6 px-4 pt-4 pb-6 sm:px-6">
         <p className="text-sm font-bold tracking-wider text-violet uppercase">Les campus</p>
