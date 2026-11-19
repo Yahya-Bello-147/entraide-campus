@@ -1,9 +1,9 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { repondreDemande } from "./demandes/actions";
 import { Icone, type NomIcone } from "./icone";
-import { DecorBandeau } from "./illustrations";
 import { Avatar, PastilleCategorie, VignetteCategorie } from "./ui";
 import { TYPES, type CategorieAnnonce, type TypeAnnonce } from "@/lib/annonces/valider";
 import { meilleuresCorrespondances } from "@/lib/annonces/correspondance";
@@ -304,6 +304,12 @@ type AnnonceRecente = {
 };
 
 const formatPrix = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+const formatHeureMinute = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" });
+const formatJourCourt = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
+function formatHeure(date: string) {
+  const d = new Date(date);
+  return d.toDateString() === new Date().toDateString() ? formatHeureMinute.format(d) : formatJourCourt.format(d);
+}
 const formatJour = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" });
 
 async function TableauDeBord({ userId }: { userId: string }) {
@@ -312,7 +318,7 @@ async function TableauDeBord({ userId }: { userId: string }) {
   const [
     { data: profil },
     { data: mesAnnonces },
-    { data: recues },
+    { data: recues, count: nombreDemandes },
     { data: acceptees },
     { data: recentes },
     { data: recherches },
@@ -322,7 +328,7 @@ async function TableauDeBord({ userId }: { userId: string }) {
       supabase.from("annonces").select("statut").eq("auteur_id", userId),
       supabase
         .from("demandes_contact")
-        .select("id, demandeur_id, annonces(titre)")
+        .select("id, demandeur_id, annonces(titre)", { count: "exact" })
         .eq("destinataire_id", userId)
         .eq("statut", "en_attente")
         .order("created_at", { ascending: false })
@@ -358,6 +364,7 @@ async function TableauDeBord({ userId }: { userId: string }) {
   );
 
   const demandes = (recues ?? []) as unknown as DemandeRecue[];
+  const nbDemandes = nombreDemandes ?? 0;
   const conversations = acceptees ?? [];
   const autreDe = new Map(
     conversations.map((d) => [d.id as string, (d.demandeur_id === userId ? d.destinataire_id : d.demandeur_id) as string]),
@@ -373,10 +380,10 @@ async function TableauDeBord({ userId }: { userId: string }) {
         .order("created_at", { ascending: false })
         .limit(10)
     : { data: [] };
-  const derniers: { demande_id: string; contenu: string }[] = [];
+  const derniers: { demande_id: string; contenu: string; created_at: string }[] = [];
   for (const m of messages ?? []) {
     if (!derniers.some((d) => d.demande_id === m.demande_id)) derniers.push(m);
-    if (derniers.length === 2) break;
+    if (derniers.length === 3) break;
   }
 
   const auteursRecents = ((recentes ?? []) as AnnonceRecente[]).map((a) => a.auteur_id);
@@ -405,169 +412,174 @@ async function TableauDeBord({ userId }: { userId: string }) {
   const recentesAffichees = (deMonCampus.length > 0 ? deMonCampus : toutesRecentes).slice(0, 4);
 
   return (
-    <main className="flex flex-1 flex-col">
-      <section className="relative overflow-hidden bg-violet text-white md:rounded-b-[2.5rem] lg:m-5 lg:rounded-[2rem]">
-        <DecorBandeau avecIllustration={!campus} />
-        {campus && (
-          // La photo de mon campus en « carte postale », à la place de l'ordinateur (grand écran).
-          <div className="absolute top-1/2 right-10 hidden h-40 w-60 -translate-y-1/2 rotate-3 overflow-hidden rounded-3xl border-4 border-white bg-white shadow-[0_12px_28px_rgb(0_0_0/0.2)] lg:block">
-            <Image src={photoCampus(campus)} alt={`Le campus ESP de ${campus}`} fill sizes="240px" className="object-cover" />
-            <CreditPhoto />
-          </div>
-        )}
-        <div className="relative mx-auto max-w-6xl px-4 pt-6 pb-10 sm:px-6 sm:pt-10">
-          <div className="flex flex-wrap items-center gap-2.5">
-            {campus ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-sm font-extrabold text-violet">
-                <Icone nom="epingle" taille={14} className="text-rose" />
-                ESP {campus}
-              </span>
-            ) : (
-              <Link href="/profil" className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-sm font-bold hover:bg-white/30">
-                <Icone nom="epingle" taille={14} />
-                Choisis ton campus
-              </Link>
-            )}
-            <p className="text-sm text-white/75 first-letter:uppercase">{formatJour.format(new Date())}</p>
-          </div>
-          <h1 className="titre mt-1 text-3xl sm:text-4xl">Bonjour {prenom ?? "et bienvenue"} !</h1>
-          <div className="mt-6 grid max-w-xl grid-cols-3 gap-3">
-            <Chiffre valeur={actives} libelle={actives > 1 ? "annonces actives" : "annonce active"} />
-            <Chiffre valeur={pourvues} libelle={pourvues > 1 ? "pourvues ou vendues" : "pourvue ou vendue"} />
-            <Chiffre valeur={conversations.length} libelle={conversations.length > 1 ? "contacts" : "contact"} />
-          </div>
-        </div>
-      </section>
-
-      <div className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <div className="flex min-w-0 flex-col gap-6">
-          {!prenom && (
-            <Link href="/profil" className="carte carte-survol flex items-center gap-4 p-5">
-              <span className="degrade flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-white">
-                <Icone nom="utilisateur" taille={22} />
-              </span>
-              <span className="flex-1">
-                <span className="block font-bold">Complète ton profil</span>
-                <span className="block text-sm text-gris">Il faut un prénom, ton campus et des coordonnées pour publier et contacter.</span>
-              </span>
-              <Icone nom="fleche" taille={20} className="text-gris" />
-            </Link>
-          )}
-
-          <section className="carte p-5">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-extrabold">Demandes en attente</h2>
-              {demandes.length > 0 && (
-                <span className="rounded-full bg-rose px-2.5 py-0.5 text-xs font-bold text-white">{demandes.length}</span>
-              )}
-            </div>
-            {demandes.length === 0 ? (
-              <p className="text-sm text-gris">Aucune demande à traiter pour l&apos;instant.</p>
-            ) : (
-              <ul className="flex flex-col gap-5">
-                {demandes.map((d) => (
-                  <li key={d.id} className="flex flex-col gap-3">
-                    <div className="flex items-center gap-3">
-                      <Avatar prenom={prenomDe.get(d.demandeur_id)} photo={photoDe.get(d.demandeur_id)} taille={40} />
-                      <p className="text-sm text-gray-700">
-                        <b className="text-encre">{prenomDe.get(d.demandeur_id) ?? "Quelqu'un"}</b> veut te contacter pour «{" "}
-                        {d.annonces?.titre ?? "ton annonce"} »
-                      </p>
-                    </div>
-                    <form action={repondreDemande} className="flex gap-2">
-                      <input type="hidden" name="demandeId" value={d.id} />
-                      <button name="reponse" value="acceptee" className="bouton bouton-principal flex-1">
-                        Accepter
-                      </button>
-                      <button name="reponse" value="refusee" className="bouton bouton-secondaire flex-1">
-                        Refuser
-                      </button>
-                    </form>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-
-          <section className="carte p-5">
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-lg font-extrabold">Derniers messages</h2>
-              <Link href="/messages" className="text-sm font-semibold text-indigo">
-                Tout voir
-              </Link>
-            </div>
-            {derniers.length === 0 ? (
-              <p className="text-sm text-gris">Pas encore de message. Une conversation s&apos;ouvre après une demande acceptée.</p>
-            ) : (
-              <ul className="flex flex-col">
-                {derniers.map((m) => {
-                  const autre = prenomDe.get(autreDe.get(m.demande_id)!);
-                  return (
-                    <li key={m.demande_id}>
-                      <Link
-                        href={`/messages/${m.demande_id}`}
-                        className="-mx-2 flex items-center gap-3 rounded-2xl px-2 py-2.5 hover:bg-black/[0.03]"
-                      >
-                        <Avatar prenom={autre} photo={photoDe.get(autreDe.get(m.demande_id)!)} taille={42} />
-                        <span className="min-w-0 flex-1">
-                          <span className="block font-bold">{autre ?? "Conversation"}</span>
-                          <span className="block truncate text-sm text-gris">{m.contenu}</span>
-                        </span>
-                        <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-bleu" aria-hidden="true" />
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </section>
-        </div>
-
-        <div className="flex min-w-0 flex-col gap-6">
-          <Link
-            href="/annonces/nouvelle"
-            className="carte-survol flex items-center gap-4 rounded-[20px] bg-violet/10 p-5 text-violet"
-          >
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-violet">
-              <Icone nom="etincelles" taille={22} />
+    // Tableau de bord « version pro » (maquette validée le 19 nov) : tous les blocs sur la même grille, mêmes bords.
+    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-5 px-4 py-6 sm:px-6 lg:py-8">
+      <header className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex min-w-0 items-center gap-3.5">
+          {campus && (
+            <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border-[3px] border-white shadow-md">
+              <Image src={photoCampus(campus)} alt={`Le campus ESP de ${campus}`} fill sizes="56px" className="object-cover" />
             </span>
-            <span className="flex-1 font-semibold">Décris ton annonce en quelques mots, l&apos;assistant la rédige pour toi</span>
-            <Icone nom="fleche" taille={20} />
+          )}
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-gris">
+              <span className="first-letter:uppercase">{formatJour.format(new Date())}</span>
+              {" · "}
+              {campus ? (
+                <span className="font-bold text-violet">ESP {campus}</span>
+              ) : (
+                <Link href="/profil" className="font-bold text-violet hover:underline">
+                  Choisis ton campus
+                </Link>
+              )}
+            </p>
+            <h1 className="titre truncate text-3xl">Bonjour {prenom ?? "et bienvenue"}</h1>
+          </div>
+        </div>
+        <div className="flex gap-2.5">
+          <Link href="/annonces" className="bouton bouton-contour hidden rounded-xl sm:inline-flex">
+            Voir les annonces
           </Link>
+          <Link href="/annonces/nouvelle" className="bouton bouton-principal rounded-xl">
+            <Icone nom="plus" taille={17} epaisseur={2.5} />
+            Nouvelle annonce
+          </Link>
+        </div>
+      </header>
 
-          <section className="carte p-5">
-            <h2 className="flex items-center gap-2 text-lg font-extrabold">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-or text-encre">
-                <Icone nom="etincelles" taille={17} />
-              </span>
-              Tu peux aider
-            </h2>
-            <p className="mt-1 mb-4 text-sm text-gris">Les demandes qui correspondent à tes compétences.</p>
+      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Indicateur couleur="bg-violet/15" valeur={actives} libelle={actives > 1 ? "annonces actives" : "annonce active"} />
+        <Indicateur couleur="bg-rose/15" valeur={nbDemandes} libelle={nbDemandes > 1 ? "demandes à traiter" : "demande à traiter"} />
+        <Indicateur couleur="bg-bleu/15" valeur={conversations.length} libelle={conversations.length > 1 ? "contacts" : "contact"} />
+        <Indicateur couleur="bg-succes/15" valeur={pourvues} libelle={pourvues > 1 ? "pourvues ou vendues" : "pourvue ou vendue"} />
+      </dl>
+
+      {!(prenom && campus) && (
+        <Link href="/profil" className="flex items-center gap-4 rounded-2xl border border-rose/30 bg-white p-4 hover:bg-rose/5">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose/10 text-rose">
+            <Icone nom="utilisateur" taille={20} />
+          </span>
+          <span className="flex-1">
+            <span className="block font-bold">Complète ton profil</span>
+            <span className="block text-sm text-gris">Il faut un prénom, ton campus et des coordonnées pour publier et contacter.</span>
+          </span>
+          <Icone nom="fleche" taille={20} className="text-gris" />
+        </Link>
+      )}
+
+      <Link
+        href="/annonces/nouvelle"
+        className="flex flex-wrap items-center gap-3 rounded-2xl bg-gradient-to-r from-violet to-rose px-5 py-4 text-white transition hover:brightness-105"
+      >
+        <span className="rounded-full bg-white/20 px-2.5 py-1 text-xs font-extrabold tracking-wider">ASSISTANT IA</span>
+        {/* Sur téléphone, le texte passe sur sa propre ligne (pleine largeur) sous l'étiquette et le bouton. */}
+        <span className="order-last w-full font-bold sm:order-none sm:w-auto sm:min-w-0 sm:flex-1">
+          Décris ton annonce en quelques mots, l&apos;assistant la rédige pour toi.
+        </span>
+        <span className="ml-auto rounded-xl bg-white px-3.5 py-2 text-sm font-extrabold text-encre sm:ml-0">Essayer →</span>
+      </Link>
+
+      <div className="grid items-stretch gap-5 lg:grid-cols-2">
+        <Bloc titre="À traiter" lien={{ href: "/demandes", texte: "Toutes les demandes" }}>
+          {demandes.length === 0 ? (
+            <p className="px-5 pb-5 text-gris">Aucune demande à traiter pour l&apos;instant.</p>
+          ) : (
+            <ul>
+              {demandes.map((d) => (
+                <li key={d.id} className="border-t border-ligne px-5 py-4">
+                  <div className="flex items-center gap-3">
+                    <Avatar prenom={prenomDe.get(d.demandeur_id)} photo={photoDe.get(d.demandeur_id)} taille={40} />
+                    <p className="min-w-0 flex-1">
+                      <Link href={`/etudiants/${d.demandeur_id}`} className="font-bold hover:underline">
+                        {prenomDe.get(d.demandeur_id) ?? "Quelqu'un"}
+                      </Link>
+                      <span className="block truncate text-sm text-gris">veut ton contact · « {d.annonces?.titre ?? "ton annonce"} »</span>
+                    </p>
+                  </div>
+                  <form action={repondreDemande} className="mt-3 flex gap-2 pl-[52px]">
+                    <input type="hidden" name="demandeId" value={d.id} />
+                    <button name="reponse" value="acceptee" className="bouton bouton-principal min-h-0 rounded-xl px-4 py-2 text-sm">
+                      Accepter
+                    </button>
+                    <button name="reponse" value="refusee" className="bouton bouton-contour min-h-0 rounded-xl px-4 py-2 text-sm">
+                      Refuser
+                    </button>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Bloc>
+
+        <Bloc titre="Messages" lien={{ href: "/messages", texte: "Tout voir" }}>
+          {derniers.length === 0 ? (
+            <p className="px-5 pb-5 text-gris">Pas encore de message. Une conversation s&apos;ouvre après une demande acceptée.</p>
+          ) : (
+            <ul>
+              {derniers.map((m) => {
+                const autre = autreDe.get(m.demande_id)!;
+                return (
+                  <li key={m.demande_id} className="border-t border-ligne">
+                    <Link href={`/messages/${m.demande_id}`} className="flex items-center gap-3 px-5 py-3.5 hover:bg-violet/5">
+                      <Avatar prenom={prenomDe.get(autre)} photo={photoDe.get(autre)} taille={40} />
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-bold">{prenomDe.get(autre) ?? "Conversation"}</span>
+                        <span className="block truncate text-sm text-gris">{m.contenu}</span>
+                      </span>
+                      <span className="text-xs font-semibold text-gris">{formatHeure(m.created_at)}</span>
+                      <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-rose" aria-hidden="true" />
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </Bloc>
+
+        <Bloc
+          titre={`Annonces récentes${deMonCampus.length > 0 ? ` à ${campus}` : ""}`}
+          lien={{ href: "/annonces", texte: "Toutes les annonces" }}
+        >
+          {recentesAffichees.length === 0 ? (
+            <p className="px-5 pb-5 text-gris">Aucune nouvelle annonce pour le moment.</p>
+          ) : (
+            <ul>
+              {recentesAffichees.map((a) => (
+                <li key={a.id} className="border-t border-ligne">
+                  <Link href={`/annonces/${a.id}`} className="flex items-center gap-3 px-5 py-3 hover:bg-violet/5">
+                    <VignetteCategorie categorie={a.categorie} taille={36} />
+                    <span className="min-w-0 flex-1 truncate font-bold">{a.titre}</span>
+                    <PastilleCategorie categorie={a.categorie} />
+                    <span className="w-16 shrink-0 text-right font-extrabold">
+                      {a.prix !== null ? formatPrix.format(a.prix) : "—"}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Bloc>
+
+        <Bloc titre="Tu peux aider">
+          <div className="flex flex-1 flex-col px-5 pb-5">
             {mesCompetences.length === 0 ? (
-              <Link href="/profil" className="flex items-center gap-3 rounded-2xl bg-violet/10 p-4 text-sm font-semibold text-violet">
-                <Icone nom="televerser" taille={20} className="shrink-0" />
-                <span className="flex-1">Dépose ton CV dans ton profil : l&apos;IA trouve tes compétences, et on te montre où tu peux aider.</span>
-                <Icone nom="fleche" taille={18} />
-              </Link>
+              <>
+                <p className="text-gris">Dépose ton CV : l&apos;IA trouve tes compétences, et on te montre où tu peux aider.</p>
+                <Link href="/profil" className="bouton bouton-contour mt-auto self-start rounded-xl text-violet">
+                  Ajouter mon CV
+                </Link>
+              </>
             ) : suggestions.length === 0 ? (
-              <p className="rounded-2xl bg-gray-50 p-4 text-sm text-gray-600">
-                Aucune demande ne correspond à tes compétences pour l&apos;instant. On te préviendra ici dès qu&apos;il y en a une.
-              </p>
+              <p className="text-gris">Aucune demande ne correspond à tes compétences pour l&apos;instant. On te préviendra ici dès qu&apos;il y en a une.</p>
             ) : (
-              <ul className="flex flex-col gap-3">
+              <ul className="flex flex-col gap-2">
                 {suggestions.map(({ annonce: a, competences }) => (
                   <li key={a.id}>
-                    <Link href={`/annonces/${a.id}`} className="flex items-center gap-3 rounded-2xl border border-ligne p-3 transition hover:border-violet/40 hover:bg-violet/5">
-                      <VignetteCategorie categorie={a.categorie} taille={44} />
+                    <Link href={`/annonces/${a.id}`} className="flex items-center gap-3 rounded-xl border border-ligne p-3 hover:border-violet/40 hover:bg-violet/5">
+                      <VignetteCategorie categorie={a.categorie} taille={36} />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate font-bold">{a.titre}</span>
-                        <span className="mt-1 flex flex-wrap gap-1">
-                          {competences.slice(0, 2).map((c) => (
-                            <span key={c} className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-800">
-                              {c}
-                            </span>
-                          ))}
-                        </span>
+                        <span className="block truncate text-xs font-semibold text-succes">{competences.slice(0, 2).join(" · ")}</span>
                       </span>
                       <Icone nom="fleche" taille={18} className="shrink-0 text-gris" />
                     </Link>
@@ -575,38 +587,37 @@ async function TableauDeBord({ userId }: { userId: string }) {
                 ))}
               </ul>
             )}
-          </section>
-        </div>
+          </div>
+        </Bloc>
       </div>
-
-      {/* Annonces récentes : sur toute la largeur, en bas du tableau de bord. */}
-      <section className="mx-auto w-full max-w-6xl px-4 pb-8 sm:px-6">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-extrabold">
-            Annonces récentes des autres étudiants{deMonCampus.length > 0 ? ` · à ${campus}` : ""}
-          </h2>
-          <Link href="/annonces" className="text-sm font-semibold text-indigo">
-            Toutes les annonces
-          </Link>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
-          {recentesAffichees.map((a) => (
-            <Link key={a.id} href={`/annonces/${a.id}`} className="carte carte-survol flex min-w-0 items-center gap-3 p-3.5">
-              <VignetteCategorie categorie={a.categorie} taille={48} />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate font-bold">{a.titre}</span>
-                <span className="mt-1 flex flex-wrap items-center gap-2 text-xs text-gris">
-                  <PastilleCategorie categorie={a.categorie} />
-                  {a.lieu && <span className="truncate">{a.lieu}</span>}
-                </span>
-              </span>
-              {a.prix !== null && <span className="shrink-0 font-extrabold text-violet">{formatPrix.format(a.prix)}</span>}
-            </Link>
-          ))}
-        </div>
-        {recentesAffichees.length === 0 && <p className="text-sm text-gris">Aucune nouvelle annonce pour le moment.</p>}
-      </section>
     </main>
+  );
+}
+
+function Indicateur({ couleur, valeur, libelle }: { couleur: string; valeur: number; libelle: string }) {
+  return (
+    <div className="flex items-center gap-3 rounded-2xl border border-ligne bg-white px-4 py-3 shadow-[0_4px_12px_rgb(142_102_184/0.06)]">
+      <span className={`h-7 w-7 shrink-0 rounded-lg ${couleur}`} aria-hidden="true" />
+      <dd className="text-xl font-extrabold">{valeur}</dd>
+      <dt className="text-sm font-semibold text-gray-600">{libelle}</dt>
+    </div>
+  );
+}
+
+// Un bloc blanc du tableau de bord : titre (et lien) en haut, contenu en dessous ; il s'étire à la hauteur de son voisin.
+function Bloc({ titre, lien, children }: { titre: string; lien?: { href: string; texte: string }; children: ReactNode }) {
+  return (
+    <section className="flex min-w-0 flex-col rounded-[20px] border border-ligne bg-white shadow-[0_6px_18px_rgb(142_102_184/0.08)]">
+      <div className="flex items-center justify-between gap-3 px-5 py-4">
+        <h2 className="text-lg font-extrabold">{titre}</h2>
+        {lien && (
+          <Link href={lien.href} className="shrink-0 text-sm font-bold text-violet hover:underline">
+            {lien.texte}
+          </Link>
+        )}
+      </div>
+      {children}
+    </section>
   );
 }
 
@@ -619,12 +630,3 @@ function CreditPhoto() {
   );
 }
 
-function Chiffre({ valeur, libelle }: { valeur: number; libelle: string }) {
-  return (
-    // Au premier plan : fond assez opaque et flou derrière, pour que la vague ne passe pas à travers.
-    <div className="relative rounded-2xl border border-white/30 bg-[#a17fcb]/90 p-3 shadow-sm backdrop-blur-sm">
-      <p className="text-2xl font-extrabold">{valeur}</p>
-      <p className="text-xs leading-tight text-white/85">{libelle}</p>
-    </div>
-  );
-}
