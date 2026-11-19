@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { proposerAnnonce, publierAnnonce, type EtatPublication, type EtatRedaction } from "../actions";
 import { Icone } from "@/app/icone";
-import { STYLE_CATEGORIES } from "@/lib/annonces/style-categories";
+import { VignetteCategorie } from "@/app/ui";
 import { CATEGORIES, TYPES, type CategorieAnnonce, type ChampsAnnonce } from "@/lib/annonces/valider";
 
 type Etat = EtatPublication & { essai?: number; moment?: number };
@@ -99,20 +99,13 @@ export function FormulaireAnnonce({
           </legend>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {(Object.keys(CATEGORIES) as CategorieAnnonce[]).map((c, i) => {
-              const style = STYLE_CATEGORIES[c];
               return (
                 <label
                   key={c}
                   className="flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 border-ligne px-2 py-3 text-center text-sm font-semibold transition hover:border-violet/40 has-[:checked]:border-violet has-[:checked]:bg-violet/5"
                 >
                   <input type="radio" name="categorie" value={c} required={i === 0} defaultChecked={v?.categorie === c} className="sr-only" />
-                  <span
-                    className="flex h-10 w-10 items-center justify-center rounded-xl text-white"
-                    style={{ backgroundImage: style.vignette }}
-                    aria-hidden="true"
-                  >
-                    <Icone nom={style.icone} taille={20} />
-                  </span>
+                  <VignetteCategorie categorie={c} taille={44} />
                   {CATEGORIES[c]}
                 </label>
               );

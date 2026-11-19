@@ -3,6 +3,7 @@ import { Icone } from "./icone";
 import { STYLE_CATEGORIES } from "@/lib/annonces/style-categories";
 import { CATEGORIES, type CategorieAnnonce } from "@/lib/annonces/valider";
 import { urlPhoto } from "@/lib/profil/photo";
+import { GlyphCategorie } from "./icones-categories";
 
 // Couleurs d'avatar, choisies d'après le prénom (toujours la même pour une personne).
 const COULEURS_AVATAR = [
@@ -56,15 +57,27 @@ export function PastilleCategorie({ categorie }: { categorie: CategorieAnnonce }
   );
 }
 
+// Tuile de catégorie « style appli » : dégradé, reflet en haut, ombre colorée et dessin plein en blanc.
 export function VignetteCategorie({ categorie, taille = 54 }: { categorie: CategorieAnnonce; taille?: number }) {
   const style = STYLE_CATEGORIES[categorie];
+  const rayon = Math.round(taille * 0.31);
   return (
     <span
       aria-hidden="true"
-      className="inline-flex shrink-0 items-center justify-center rounded-2xl text-white"
-      style={{ width: taille, height: taille, backgroundImage: style.vignette }}
+      className="relative inline-flex shrink-0 items-center justify-center overflow-hidden"
+      style={{
+        width: taille,
+        height: taille,
+        borderRadius: rayon,
+        backgroundImage: style.vignette,
+        boxShadow: `0 ${Math.round(taille / 6)}px ${Math.round(taille / 3)}px ${style.accent}55, inset 0 1px 0 rgb(255 255 255 / 0.45), inset 0 -3px 0 rgb(0 0 0 / 0.12)`,
+      }}
     >
-      <Icone nom={style.icone} taille={Math.round(taille * 0.48)} />
+      <span
+        className="absolute inset-x-[5%] top-[5%] h-1/2 bg-gradient-to-b from-white/35 to-white/0"
+        style={{ borderRadius: `${rayon}px ${rayon}px ${rayon * 2}px ${rayon * 2}px` }}
+      />
+      <GlyphCategorie categorie={categorie} taille={Math.round(taille * 0.56)} accent={style.accent} />
     </span>
   );
 }

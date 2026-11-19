@@ -207,3 +207,12 @@ body {
   .defile { animation: defile 28s linear infinite; }
   .defile-inverse { animation: defile 34s linear infinite reverse; }
 }
+
+/* Cartes d'annonces « version pro » : elles se penchent et se soulèvent au survol (effet 3D). */
+.carte-3d { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  .carte-3d:hover {
+    transform: perspective(900px) rotateX(4deg) rotateY(-5deg) translateY(-6px);
+    box-shadow: 0 26px 50px rgb(63 34 110 / 0.22);
+  }
+}
